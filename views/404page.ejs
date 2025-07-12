@@ -1,0 +1,17 @@
+<%- include('partials/head') %>
+  </head>
+  <body>
+    <%- include('partials/nav') %>
+    <div class="flex flex-col justify-center items-center gap-2 mt-4">
+      <p class="text-gray-950">You tried to access: <%= url %></p>
+      <span class="text-red-600 text-6xl"> 404</span>
+      <span class="text-red-600 
+      text-6xl"> page Not Found</span>
+      <a
+          href="/"
+          class="bg-green-800 hover:bg-green-400 py-2 px-4 rounded transition duration-300 text-white hover:text-black text-3xl"
+          >Go to Home</a
+        >
+    </div>
+  </body>
+</html>

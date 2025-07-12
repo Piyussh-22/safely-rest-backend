@@ -3,11 +3,16 @@ import path from "path";
 //external
 import express from "express";
 //local
-import userRouter from "./routes/userRouter.js";
+import storeRouter from "./routes/storeRouter.js";
 import hostRouter from "./routes/hostRouter.js";
 import rootDir from "./utils/pathUtil.js";
+import { get404 } from "./controllers/404Controller.js";
 
 const app = express();
+
+//ejs boilerplate
+app.set("view engine", "ejs");
+app.set("views", "views");
 
 // Middleware to parse URL-encoded form data
 app.use(express.urlencoded({ extended: false }));
@@ -16,13 +21,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(rootDir, "public")));
 
 // Routers
-app.use(userRouter);
+app.use("/store", storeRouter);
 app.use("/host", hostRouter);
 
 // 404 Page Handler
-app.use((req, res) => {
-  res.status(404).sendFile(path.join(rootDir, "views", "404page.html"));
-});
+app.use(get404);
 
 // Start server
 const PORT = 4000;

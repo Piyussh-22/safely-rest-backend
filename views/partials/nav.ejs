@@ -1,0 +1,28 @@
+<header class="bg-red-500 text-white shadow-md">
+  <nav class="container mx-auto flex justify-between items-center px-2 py-2">
+    <a
+      href="/store/home-list"
+      class="<%= currentPage === 'home-list' ? 'bg-red-400' : 'hover:bg-red-400' %> px-2 py-2 rounded transition font-bold text-xl"
+    >
+      Safely Rest
+    </a>
+    <a
+      href="/store/bookings"
+      class="<%= currentPage === 'booking' ? 'bg-red-400' : 'hover:bg-red-400' %> px-2 py-2 rounded transition font-bold text-xl"
+    >
+      Booking
+    </a>
+    <a
+      href="/store/favourite-list"
+      class="<%= currentPage === 'favourite-list' ? 'bg-red-400' : 'hover:bg-red-400' %> px-2 py-2 rounded transition font-bold text-xl"
+    >
+      favourite-list
+    </a>
+    <a
+      href="/host/add-home"
+      class="<%= currentPage === 'addHome' ? 'bg-red-400' : 'hover:bg-red-400' %> hover:bg-red-400 px-2 py-2 rounded transition font-medium text-xl"
+    >
+      Add Home
+    </a>
+  </nav>
+</header>

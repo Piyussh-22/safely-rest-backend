@@ -1,22 +1,12 @@
-// core module
-import path from "path";
-
 // external module
 import express from "express";
-
-// local module
-import rootDir from "../utils/pathUtil.js";
-
 const hostRouter = express.Router();
 
-// GET route to show add-home form
-hostRouter.get("/add-home", (req, res) => {
-  res.sendFile(path.join(rootDir, "views", "addHome.html"));
-});
+// local module
+import * as hostController from "../controllers/hostController.js";
 
-// POST route to process the form
-hostRouter.post("/add-home", (req, res) => {
-  res.sendFile(path.join(rootDir, "views", "addHomeDone.html"));
-});
+hostRouter.get("/add-home", hostController.getAddHome);
+
+hostRouter.post("/add-home", hostController.postAddHome);
 
 export default hostRouter;
