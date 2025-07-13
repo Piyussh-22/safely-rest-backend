@@ -5,8 +5,10 @@ const storeRouter = express.Router();
 //local modules
 import * as storeController from "../controllers/storeController.js";
 
+storeRouter.get("/", storeController.getIndex);
 storeRouter.get("/home-list", storeController.getHomes);
 storeRouter.get("/bookings", storeController.getBookings);
 storeRouter.get("/favourite-list", storeController.getFavouriteList);
 
+storeRouter.get("/homes/:homeId", storeController.getHomeDetails);
 export default storeRouter;

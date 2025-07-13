@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(rootDir, "public")));
 
 // Routers
-app.use("/store", storeRouter);
+app.use("/", storeRouter);
 app.use("/host", hostRouter);
 
 // 404 Page Handler

@@ -1,22 +1,34 @@
 <header class="bg-red-500 text-white shadow-md">
   <nav class="container mx-auto flex justify-between items-center px-2 py-2">
     <a
-      href="/store/home-list"
-      class="<%= currentPage === 'home-list' ? 'bg-red-400' : 'hover:bg-red-400' %> px-2 py-2 rounded transition font-bold text-xl"
+      href="/"
+      class="<%= currentPage === 'index' ? 'bg-red-400' : 'hover:bg-red-400' %> px-2 py-2 rounded transition font-bold text-xl"
     >
       Safely Rest
     </a>
     <a
-      href="/store/bookings"
-      class="<%= currentPage === 'booking' ? 'bg-red-400' : 'hover:bg-red-400' %> px-2 py-2 rounded transition font-bold text-xl"
+      href="/home-list"
+      class="<%= currentPage === 'home-list' ? 'bg-red-400' : 'hover:bg-red-400' %> px-2 py-2 rounded transition font-bold text-xl"
+    >
+      Homes
+    </a>
+    <a
+      href="/bookings"
+      class="<%= currentPage === 'bookings' ? 'bg-red-400' : 'hover:bg-red-400' %> px-2 py-2 rounded transition font-bold text-xl"
     >
       Booking
     </a>
     <a
-      href="/store/favourite-list"
+      href="/favourite-list"
       class="<%= currentPage === 'favourite-list' ? 'bg-red-400' : 'hover:bg-red-400' %> px-2 py-2 rounded transition font-bold text-xl"
     >
-      favourite-list
+      Favourite
+    </a>
+    <a
+      href="/host/host-home-list"
+      class="<%= currentPage === 'host-home' ? 'bg-red-400' : 'hover:bg-red-400' %> hover:bg-red-400 px-2 py-2 rounded transition font-medium text-xl"
+    >
+      Host Home
     </a>
     <a
       href="/host/add-home"
