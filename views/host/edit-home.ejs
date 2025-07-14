@@ -1,0 +1,73 @@
+<%- include('../partials/head') %>
+  </head>
+  <body>
+    <%- include('../partials/nav') %>
+    <div class="bg-black min-h-screen flex justify-center items-center">
+      <div class="bg-zinc-900 rounded-lg shadow p-4 m-4 w-[90%]">
+        <h1 class="text-2xl font-bold text-white mb-6 text-center">
+          <%= editing ? "Edit" : "Register" %>
+          your home
+        </h1>
+        <form 
+        action="/host/<%= editing ? "edit-home" : "add-home" %>" method="POST" class="flex flex-col gap-4">
+          <input 
+          type="hidden"
+          hidden
+          name="id"
+          value="<%= editing ? home.id : '' %>"
+          />
+          <input
+            type="text"
+            name="houseName"
+            value="<%= editing ? home.houseName : '' %>"
+            placeholder="Enter home name"
+            class="px-4 py-2 rounded text-black"
+            required
+          />
+          <input
+            type="text"
+            name="houseLocation"
+            value="<%= editing ? home.houseLocation : '' %>"
+            placeholder="Enter Location"
+            class="px-4 py-2 rounded text-black"
+            required
+          />
+          <input
+            type="number"
+            min="0"
+            name="housePrice"
+            value="<%= editing ? home.housePrice : '' %>"
+            placeholder="Enter Price Per Night"
+            class="px-4 py-2 rounded text-black"
+            required
+          />
+          <input
+            type="number"
+            min="0"
+            max="5"
+            name="houseRating"
+            value="<%= editing ? home.houseRating : '' %>"
+            placeholder="Enter Rating"
+            class="px-4 py-2 rounded text-black"
+            required
+          />
+          <input
+          type="text"
+          name="houseURL"
+          placeholder="Enter House Image URL"
+          value="<%= editing ? home.houseURL : '' %>"
+          class="px-4 py-2 rounded text-black"
+          required
+        />
+          <input
+            type="submit"
+            value="<%= editing ? "Update" : "Register" %>"
+            class="mt-2 bg-amber-600 hover:bg-amber-700 text-black font-medium py-2 rounded cursor-pointer transition"
+          />
+         
+        </form>
+      </div>
+    </div>
+    
+  </body>
+</html>

@@ -1,0 +1,15 @@
+<form
+  action="/favourite-list"
+  method="POST"
+  class="flex-1 flex justify-center items-center"
+>
+  <input type="hidden" name="id" value="<%= home.id %>" />
+  <button
+    type="submit"
+    class="w-full h-full bg-red-500 hover:bg-red-700 text-white rounded transition flex justify-center items-center"
+    title="Add to Favorites"
+    aria-label="Add to Favorites"
+  >
+    <i data-lucide="heart"></i>
+  </button>
+</form>
