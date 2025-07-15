@@ -13,10 +13,8 @@ export const getEditHome = (req, res, next) => {
   const editing = req.query.editing === "true";
   Home.findById(homeId, (home) => {
     if (!home) {
-      console.log("home not found");
       return res.redirect("/host/host-home-list");
     }
-    console.log(homeId, editing, home);
     res.render("host/edit-home", {
       pageTitle: "Edit Home",
       currentPage: "host-home",
@@ -47,7 +45,7 @@ export const postAddHome = (req, res) => {
     houseURL
   );
   home.save();
-  res.redirect("/host/home-home-list");
+  res.redirect("/host/host-home-list");
 };
 
 export const postEditHome = (req, res) => {
@@ -63,4 +61,14 @@ export const postEditHome = (req, res) => {
   home.id = id;
   home.save();
   res.redirect("/host/host-home-list");
+};
+
+export const postDeleteHome = (req, res) => {
+  const homeId = req.params.homeId;
+  Home.deleteById(homeId, (error) => {
+    if (error) {
+      console.log("error in deleted", error);
+    }
+    res.redirect("/host/host-home-list");
+  });
 };

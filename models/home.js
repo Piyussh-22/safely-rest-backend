@@ -2,6 +2,7 @@
 import fs from "fs";
 import path from "path";
 import rootDir from "../utils/pathUtil.js";
+import { Favourite } from "./favourite.js";
 
 const homeDataPath = path.join(rootDir, "data", "homes.json");
 
@@ -43,6 +44,15 @@ export class Home {
     this.fetchAll((homes) => {
       const homeFound = homes.find((home) => home.id === homeId);
       callback(homeFound);
+    });
+  }
+
+  static deleteById(homeId, callback) {
+    this.fetchAll((homes) => {
+      homes = homes.filter((home) => home.id !== homeId);
+      fs.writeFile(homeDataPath, JSON.stringify(homes), (error) => {
+        Favourite.deleteById(homeId, callback);
+      });
     });
   }
 }

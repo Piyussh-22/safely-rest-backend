@@ -50,9 +50,11 @@
                 Edit
               </a>
               
-              <button class="block bg-amber-600 hover:bg-amber-700 text-white text-center py-2 rounded transition flex-1">
+              <form action="/host/delete-home/<%=home.id%>" class="flex-1" method="POST">
+              <button type="submit"   class="block bg-amber-600 hover:bg-amber-700 text-white text-center py-2 rounded transition w-full">
                 Delete
               </button>
+              </form>
             </div>
           </div>
         <% }) %>

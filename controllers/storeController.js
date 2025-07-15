@@ -25,7 +25,6 @@ export const getHomeDetails = (req, res) => {
   const homeId = req.params.homeId;
   Home.findById(homeId, (home) => {
     if (!home) {
-      console.log("home not found");
       res.redirect("/home-list");
     } else {
       res.render("store/home-detail", {
@@ -66,4 +65,14 @@ export const postAddToFavourites = (req, res, next) => {
     }
   });
   res.redirect("/favourite-list");
+};
+
+export const postRemoveFavourite = (req, res, next) => {
+  const homeId = req.params.homeId;
+  Favourite.deleteById(homeId, (error) => {
+    if (error) {
+      console.log("Error while removing from Favourite", error);
+    }
+    res.redirect("/favourite-list");
+  });
 };
