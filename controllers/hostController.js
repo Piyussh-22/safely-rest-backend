@@ -1,74 +1,128 @@
-import { Home } from "../models/home.js";
+import { House } from "../models/house.js";
 
-export const getAddHome = (req, res, next) => {
-  res.render("host/edit-home", {
-    pageTitle: "add home",
-    currentPage: "addHome",
+// GET: Add House Form
+export const getAddHouse = (req, res) => {
+  res.render("host/edit-house", {
+    pageTitle: "Add House",
+    currentPage: "addHouse",
     editing: false,
+    house: null,
   });
 };
 
-export const getEditHome = (req, res, next) => {
-  const homeId = req.params.homeId;
+// GET: Edit House Form
+export const getEditHouse = (req, res) => {
+  const houseID = req.params.houseID;
   const editing = req.query.editing === "true";
-  Home.findById(homeId, (home) => {
-    if (!home) {
-      return res.redirect("/host/host-home-list");
-    }
-    res.render("host/edit-home", {
-      pageTitle: "Edit Home",
-      currentPage: "host-home",
-      editing: editing,
-      home: home,
-    });
-  });
-};
 
-export const getHostHomes = (req, res) => {
-  Home.fetchAll((registeredHomes) =>
-    res.render("host/host-home-list", {
-      registeredHomes: registeredHomes,
-      pageTitle: "Host Homes List",
-      currentPage: "host-home",
+  if (!editing) {
+    return res.redirect("/host/host-house-list");
+  }
+
+  House.findById(houseID)
+    .then(([rows]) => {
+      const house = rows[0];
+      if (!house) {
+        return res.redirect("/host/host-house-list");
+      }
+
+      res.render("host/edit-house", {
+        pageTitle: "Edit House",
+        currentPage: "host-house",
+        editing,
+        house,
+      });
     })
-  );
+    .catch((err) => {
+      console.error("Error loading house for edit:", err);
+      res.redirect("/host/host-house-list");
+    });
 };
 
-export const postAddHome = (req, res) => {
-  const { houseName, housePrice, houseRating, houseLocation, houseURL } =
-    req.body;
-  const home = new Home(
+// GET: All Host's Houses
+export const getHostHouses = (req, res) => {
+  House.fetchAll()
+    .then(([registeredHouses]) => {
+      res.render("host/host-house-list", {
+        registeredHouses,
+        pageTitle: "Host Houses List",
+        currentPage: "host-house",
+      });
+    })
+    .catch((err) => {
+      console.error("Error fetching host houses:", err);
+      res.redirect("/");
+    });
+};
+
+// POST: Add New House
+export const postAddHouse = (req, res) => {
+  const {
     houseName,
     housePrice,
     houseRating,
     houseLocation,
-    houseURL
-  );
-  home.save();
-  res.redirect("/host/host-home-list");
-};
+    housePhotoURL,
+    houseDescription,
+  } = req.body;
 
-export const postEditHome = (req, res) => {
-  const { id, houseName, housePrice, houseRating, houseLocation, houseURL } =
-    req.body;
-  const home = new Home(
+  const house = new House(
+    null,
     houseName,
     housePrice,
     houseRating,
     houseLocation,
-    houseURL
+    housePhotoURL,
+    houseDescription
   );
-  home.id = id;
-  home.save();
-  res.redirect("/host/host-home-list");
+
+  house
+    .save()
+    .then(() => res.redirect("/host/host-house-list"))
+    .catch((err) => {
+      console.error("Error saving new house:", err);
+      res.redirect("/host/host-house-list");
+    });
 };
 
-export const postDeleteHome = (req, res) => {
-  const homeId = req.params.homeId;
-  Home.deleteById(homeId, (error) => {
-    if (error) {
-      console.log("error in deleted", error);
-    }
-    res.redirect("/host/host-home-list");
-  });
+// POST: Update Existing House
+export const postEditHouse = (req, res) => {
+  const {
+    houseID,
+    houseName,
+    housePrice,
+    houseRating,
+    houseLocation,
+    housePhotoURL,
+    houseDescription,
+  } = req.body;
+
+  const house = new House(
+    houseID,
+    houseName,
+    housePrice,
+    houseRating,
+    houseLocation,
+    housePhotoURL,
+    houseDescription
+  );
+
+  house
+    .save()
+    .then(() => res.redirect("/host/host-house-list"))
+    .catch((err) => {
+      console.error("Error updating house:", err);
+      res.redirect("/host/host-house-list");
+    });
+};
+
+// POST: Delete House
+export const postDeleteHouse = (req, res) => {
+  const houseID = req.params.houseID;
+  House.deleteById(houseID)
+    .then(() => res.redirect("/host/host-house-list"))
+    .catch((err) => {
+      console.error("Error deleting house:", err);
+      res.redirect("/host/host-house-list");
+    });
 };

@@ -1,15 +1,15 @@
 <form
-  action="/favourite-list"
+  action="/favourite-list/<%= house.houseID %>"
   method="POST"
   class="flex-1 flex justify-center items-center"
 >
-  <input type="hidden" name="id" value="<%= home.id %>" />
+  <input type="hidden" name="houseID" value="<%= house.houseID %>" />
   <button
     type="submit"
     class="w-full h-full bg-red-500 hover:bg-red-700 text-white rounded transition flex justify-center items-center"
-    title="Add to Favorites"
-    aria-label="Add to Favorites"
+    title="Remove from Favourites"
+    aria-label="Remove from Favourites"
   >
-    <i data-lucide="heart"></i>
+    <i data-lucide="heart-off"></i>
   </button>
 </form>

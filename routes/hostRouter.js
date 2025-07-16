@@ -2,19 +2,22 @@
 import express from "express";
 const hostRouter = express.Router();
 
-// local module
+// local controller
 import * as hostController from "../controllers/hostController.js";
 
-hostRouter.get("/add-home", hostController.getAddHome);
+// 🟢 Add House (Form + Submission)
+hostRouter.get("/add-house", hostController.getAddHouse); // GET Form
+hostRouter.post("/add-house", hostController.postAddHouse); // POST Save New
 
-hostRouter.post("/add-home", hostController.postAddHome);
+// 🟡 Edit House (Form + Submission)
+hostRouter.get("/edit-house/:houseID", hostController.getEditHouse); // GET Form
+hostRouter.post("/edit-house", hostController.postEditHouse); // POST Update
 
-hostRouter.get("/host-home-list", hostController.getHostHomes);
+// 🔴 Delete House
+hostRouter.post("/delete-house/:houseID", hostController.postDeleteHouse);
 
-hostRouter.get("/edit-home/:homeId", hostController.getEditHome);
+// 🟣 Show All Houses (List)
+hostRouter.get("/host-house-list", hostController.getHostHouses);
 
-hostRouter.post("/edit-home", hostController.postEditHome);
-
-hostRouter.post("/delete-home/:homeId", hostController.postDeleteHome);
-
+// DONE
 export default hostRouter;

@@ -1,41 +1,64 @@
+// external
 import { Favourite } from "../models/favourite.js";
-import { Home } from "../models/home.js";
+import { House } from "../models/house.js";
 
+// Landing Page
 export const getIndex = (req, res) => {
-  Home.fetchAll((registeredHomes) =>
-    res.render("store/index", {
-      registeredHomes: registeredHomes,
-      pageTitle: "Safely Rest Home",
-      currentPage: "index",
-    })
-  );
-};
-
-export const getHomes = (req, res) => {
-  Home.fetchAll((registeredHomes) =>
-    res.render("store/home-list", {
-      registeredHomes: registeredHomes,
-      pageTitle: "Homes List",
-      currentPage: "home-list",
-    })
-  );
-};
-
-export const getHomeDetails = (req, res) => {
-  const homeId = req.params.homeId;
-  Home.findById(homeId, (home) => {
-    if (!home) {
-      res.redirect("/home-list");
-    } else {
-      res.render("store/home-detail", {
-        home: home,
-        pageTitle: "Home Detail",
-        currentPage: "home-list",
+  House.fetchAll()
+    .then(([registeredHouses]) => {
+      res.render("store/index", {
+        registeredHouses,
+        pageTitle: "Safely Rest House",
+        currentPage: "index",
       });
-    }
-  });
+    })
+    .catch((err) => {
+      console.error("Error loading index:", err);
+      res.redirect("/");
+    });
 };
 
+// House List Page
+export const getHouses = (req, res) => {
+  House.fetchAll()
+    .then(([registeredHouses]) => {
+      res.render("store/house-list", {
+        registeredHouses,
+        pageTitle: "Houses List",
+        currentPage: "house-list",
+      });
+    })
+    .catch((err) => {
+      console.error("Error loading houses:", err);
+      res.redirect("/");
+    });
+};
+
+// House Detail Page
+export const getHouseDetails = (req, res) => {
+  const houseID = req.params.houseID;
+
+  House.findById(houseID)
+    .then(([rows]) => {
+      const house = rows[0];
+
+      if (!house) {
+        return res.redirect("/house-list");
+      }
+
+      res.render("store/house-detail", {
+        house,
+        pageTitle: "House Detail",
+        currentPage: "house-list",
+      });
+    })
+    .catch((err) => {
+      console.error("Error loading house detail:", err);
+      res.redirect("/house-list");
+    });
+};
+
+// My Bookings Page (Placeholder)
 export const getBookings = (req, res) => {
   res.render("store/bookings", {
     pageTitle: "My Bookings",
@@ -43,35 +66,47 @@ export const getBookings = (req, res) => {
   });
 };
 
+// Favourite List Page
 export const getFavouriteList = (req, res) => {
   Favourite.getFavourites((favourites) => {
-    Home.fetchAll((registeredHomes) => {
-      const favouriteHomes = registeredHomes.filter((home) =>
-        favourites.includes(home.id)
-      );
-      res.render("store/favourite-list", {
-        favouriteHomes: favouriteHomes,
-        pageTitle: "My Favourite Homes",
-        currentPage: "favourite-list",
+    House.fetchAll()
+      .then(([registeredHouses]) => {
+        const favouriteHouses = registeredHouses.filter((house) =>
+          favourites.includes(house.houseID)
+        );
+
+        res.render("store/favourite-list", {
+          favouriteHouses,
+          pageTitle: "My Favourite Houses",
+          currentPage: "favourite-list",
+        });
+      })
+      .catch((err) => {
+        console.error("Error loading favourites:", err);
+        res.redirect("/");
       });
-    });
   });
 };
 
-export const postAddToFavourites = (req, res, next) => {
-  Favourite.addToFavourite(req.body.id, (error) => {
+// Add to Favourites
+export const postAddToFavourites = (req, res) => {
+  const houseID = req.body.id;
+
+  Favourite.addToFavourite(houseID, (error) => {
     if (error) {
-      console.log("while marking", error);
+      console.error("Error adding to favourites:", error);
     }
+    res.redirect("/favourite-list");
   });
-  res.redirect("/favourite-list");
 };
 
-export const postRemoveFavourite = (req, res, next) => {
-  const homeId = req.params.homeId;
-  Favourite.deleteById(homeId, (error) => {
+// Remove from Favourites
+export const postRemoveFavourite = (req, res) => {
+  const houseId = req.params.houseId;
+
+  Favourite.deleteById(houseId, (error) => {
     if (error) {
-      console.log("Error while removing from Favourite", error);
+      console.error("Error removing from favourites:", error);
     }
     res.redirect("/favourite-list");
   });

@@ -4,63 +4,60 @@
 
   <main class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold text-center mb-8 text-red-500">
-      Host mere Dost 🙏 
+      Available Houses
     </h1>
 
-    <% if (registeredHomes.length === 0) { %>
-      <p class="text-center text-gray-400">No homes registered yet.</p>
+    <% if (registeredHouses.length === 0) { %>
+      <p class="text-center text-gray-400">No houses registered yet.</p>
     <% } else { %>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        <% registeredHomes.forEach(home => { %>
+        <% registeredHouses.forEach(house => { %>
           <div class="bg-white rounded-lg shadow-md overflow-hidden">
-           
+            <!-- House Image -->
             <img
-              src="<%= home.houseURL %>"
+              src="<%= house.housePhotoURL %>"
               alt="House Image"
               class="w-full h-48 object-cover"
             />
 
-            
+            <!-- Price/Rating + Name/Location Section -->
             <div class="flex justify-between p-4">
-             
+              <!-- Left Side: Price & Rating -->
               <div class="flex flex-col">
                 <span class="text-lg font-semibold text-gray-800">
-                  ₹<%= home.housePrice %>
+                  ₹<%= house.housePrice %>
                 </span>
-                <span class="text-yellow-500">⭐ <%= home.houseRating %>/5</span>
+                <span class="text-yellow-500">⭐ <%= house.houseRating %>/5</span>
               </div>
 
-              
+              <!-- Right Side: House Name & Location -->
               <div class="flex flex-col text-right">
                 <span class="font-bold text-gray-900">
-                  <%= home.houseName %>
+                  <%= house.houseName %>
                 </span>
                 <span class="text-gray-600">
-                  📍 <%= home.houseLocation %>
+                  📍 <%= house.houseLocation %>
                 </span>
               </div>
             </div>
 
-            
+            <!-- view / fav / book Button -->
             <div class="px-4 pb-4 flex flex-row gap-2">
               <a
-                href="/host/edit-home/<%=home.id%>?editing=true"
+                href="/houses/<%= house.houseID %>"
                 class="block bg-amber-600 hover:bg-amber-700 text-white text-center py-2 rounded transition flex-1"
               >
-                Edit
+                View 
               </a>
-              
-              <form action="/host/delete-home/<%=home.id%>" class="flex-1" method="POST">
-              <button type="submit"   class="block bg-amber-600 hover:bg-amber-700 text-white text-center py-2 rounded transition w-full">
-                Delete
+              <%- include('../partials/Favourite', { house: house }) %>
+              <button class="block bg-amber-600 hover:bg-amber-700 text-white text-center py-2 rounded transition flex-1">
+                book
               </button>
-              </form>
             </div>
           </div>
         <% }) %>
       </div>
     <% } %>
-
   </main>
   <script>
     lucide.createIcons();

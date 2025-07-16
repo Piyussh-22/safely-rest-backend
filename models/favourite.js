@@ -6,12 +6,12 @@ import rootDir from "../utils/pathUtil.js";
 const favouriteDataPath = path.join(rootDir, "data", "favourite.json");
 
 export class Favourite {
-  static addToFavourite(homeId, callback) {
+  static addToFavourite(houseId, callback) {
     Favourite.getFavourites((favourites) => {
-      if (favourites.includes(homeId)) {
-        console.log("home is alrady fav marked");
+      if (favourites.includes(houseId)) {
+        console.log("house is already fav marked");
       } else {
-        favourites.push(homeId);
+        favourites.push(houseId);
         fs.writeFile(favouriteDataPath, JSON.stringify(favourites), callback);
       }
     });
@@ -23,10 +23,10 @@ export class Favourite {
     });
   }
 
-  static deleteById(delhomeId, callback) {
-    Favourite.getFavourites((homeIds) => {
-      homeIds = homeIds.filter((homeId) => homeId !== delhomeId);
-      fs.writeFile(favouriteDataPath, JSON.stringify(homeIds), callback);
+  static deleteById(delHouseId, callback) {
+    Favourite.getFavourites((houseIds) => {
+      houseIds = houseIds.filter((houseId) => houseId !== delHouseId);
+      fs.writeFile(favouriteDataPath, JSON.stringify(houseIds), callback);
     });
   }
 }
