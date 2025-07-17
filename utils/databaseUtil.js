@@ -1,5 +1,7 @@
 import { MongoClient } from "mongodb";
 
+const URL = process.env.MONGODB_URI;
+
 let _DB;
 
 const mongoConnect = (callback) => {

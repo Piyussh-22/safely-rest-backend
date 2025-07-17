@@ -2,6 +2,7 @@
 import path from "path";
 //external
 import express from "express";
+import "dotenv/config";
 //local
 import storeRouter from "./routes/storeRouter.js";
 import hostRouter from "./routes/hostRouter.js";
