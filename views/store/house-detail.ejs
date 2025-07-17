@@ -6,34 +6,34 @@
     <section class="bg-white shadow-sm rounded-xl overflow-hidden">
       <!-- Image -->
       <img 
-        src="<%= house.housePhotoURL %>" 
-        alt="<%= house.houseName %>" 
+        src="<%= house.photoUrl %>" 
+        alt="<%= house.name %>" 
         class="w-full h-64 sm:h-[350px] object-cover"
       />
 
       <!-- Content -->
       <div class="p-6 space-y-4">
         <h1 class="text-3xl font-medium tracking-tight text-[#111]">
-          <%= house.houseName %>
+          <%= house.name %>
         </h1>
 
         <p class="text-base text-gray-600">
-          <%= house.houseLocation %>
+          <%= house.location %>
         </p>
 
         <div class="grid grid-cols-2 gap-4 pt-2 text-sm text-gray-700">
           <div>
             <span class="text-gray-500">Price</span><br />
-            ₹<%= house.housePrice %> per night
+            ₹<%= house.price %> per night
           </div>
           <div>
             <span class="text-gray-500">Rating</span><br />
-            <%= house.houseRating %>/5
+            <%= house.rating %>/5
           </div>
         </div>
 
         <div class="pt-4 border-t text-sm leading-relaxed text-gray-700 whitespace-pre-line">
-          <%= house.houseDescription %>
+          <%= house.description %>
         </div>
       </div>
     </section>

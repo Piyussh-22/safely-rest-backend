@@ -15,7 +15,7 @@
           <div class="bg-white rounded-lg shadow-md overflow-hidden">
            
             <img
-              src="<%= house.housePhotoURL %>"
+              src="<%= house.photoUrl %>"
               alt="House Image"
               class="w-full h-48 object-cover"
             />
@@ -25,18 +25,18 @@
              
               <div class="flex flex-col">
                 <span class="text-lg font-semibold text-gray-800">
-                  ₹<%= house.housePrice %>
+                  ₹<%= house.price %>
                 </span>
-                <span class="text-yellow-500">⭐ <%= house.houseRating %>/5</span>
+                <span class="text-yellow-500">⭐ <%= house.rating %>/5</span>
               </div>
 
               
               <div class="flex flex-col text-right">
                 <span class="font-bold text-gray-900">
-                  <%= house.houseName %>
+                  <%= house.name %>
                 </span>
                 <span class="text-gray-600">
-                  📍 <%= house.houseLocation %>
+                  📍 <%= house.location %>
                 </span>
               </div>
             </div>

@@ -5,7 +5,7 @@ import { House } from "../models/house.js";
 // Landing Page
 export const getIndex = (req, res) => {
   House.fetchAll()
-    .then(([registeredHouses]) => {
+    .then((registeredHouses) => {
       res.render("store/index", {
         registeredHouses,
         pageTitle: "Safely Rest House",
@@ -21,7 +21,8 @@ export const getIndex = (req, res) => {
 // House List Page
 export const getHouses = (req, res) => {
   House.fetchAll()
-    .then(([registeredHouses]) => {
+    .then((registeredHouses) => {
+      console.log(registeredHouses);
       res.render("store/house-list", {
         registeredHouses,
         pageTitle: "Houses List",
@@ -39,9 +40,7 @@ export const getHouseDetails = (req, res) => {
   const houseID = req.params.houseID;
 
   House.findById(houseID)
-    .then(([rows]) => {
-      const house = rows[0];
-
+    .then((house) => {
       if (!house) {
         return res.redirect("/house-list");
       }
@@ -70,7 +69,7 @@ export const getBookings = (req, res) => {
 export const getFavouriteList = (req, res) => {
   Favourite.getFavourites((favourites) => {
     House.fetchAll()
-      .then(([registeredHouses]) => {
+      .then((registeredHouses) => {
         const favouriteHouses = registeredHouses.filter((house) =>
           favourites.includes(house.houseID)
         );

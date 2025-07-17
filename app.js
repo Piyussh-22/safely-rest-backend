@@ -7,6 +7,7 @@ import storeRouter from "./routes/storeRouter.js";
 import hostRouter from "./routes/hostRouter.js";
 import rootDir from "./utils/pathUtil.js";
 import { get404 } from "./controllers/404Controller.js";
+import { mongoConnect } from "./utils/databaseUtil.js";
 
 const app = express();
 
@@ -29,6 +30,8 @@ app.use(get404);
 
 // Start server
 const PORT = 4000;
-app.listen(PORT, () => {
-  console.log(`🟢 live at ${PORT}`);
+mongoConnect(() => {
+  app.listen(PORT, () => {
+    console.log(`🟢 live at ${PORT}`);
+  });
 });

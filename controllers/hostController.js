@@ -20,8 +20,7 @@ export const getEditHouse = (req, res) => {
   }
 
   House.findById(houseID)
-    .then(([rows]) => {
-      const house = rows[0];
+    .then((house) => {
       if (!house) {
         return res.redirect("/host/host-house-list");
       }
@@ -42,7 +41,7 @@ export const getEditHouse = (req, res) => {
 // GET: All Host's Houses
 export const getHostHouses = (req, res) => {
   House.fetchAll()
-    .then(([registeredHouses]) => {
+    .then((registeredHouses) => {
       res.render("host/host-house-list", {
         registeredHouses,
         pageTitle: "Host Houses List",
@@ -57,54 +56,36 @@ export const getHostHouses = (req, res) => {
 
 // POST: Add New House
 export const postAddHouse = (req, res) => {
-  const {
-    houseName,
-    housePrice,
-    houseRating,
-    houseLocation,
-    housePhotoURL,
-    houseDescription,
-  } = req.body;
+  const { name, price, rating, location, photoUrl, description } = req.body;
 
   const house = new House(
     null,
-    houseName,
-    housePrice,
-    houseRating,
-    houseLocation,
-    housePhotoURL,
-    houseDescription
+    name,
+    price,
+    rating,
+    location,
+    photoUrl,
+    description
   );
 
-  house
-    .save()
-    .then(() => res.redirect("/host/host-house-list"))
-    .catch((err) => {
-      console.error("Error saving new house:", err);
-      res.redirect("/host/host-house-list");
-    });
+  house.save().then(() => {
+    console.log("home saved done");
+  });
 };
 
 // POST: Update Existing House
 export const postEditHouse = (req, res) => {
-  const {
-    houseID,
-    houseName,
-    housePrice,
-    houseRating,
-    houseLocation,
-    housePhotoURL,
-    houseDescription,
-  } = req.body;
+  const { houseID, name, price, rating, location, photoUrl, description } =
+    req.body;
 
   const house = new House(
     houseID,
-    houseName,
-    housePrice,
-    houseRating,
-    houseLocation,
-    housePhotoURL,
-    houseDescription
+    name,
+    price,
+    rating,
+    location,
+    photoUrl,
+    description
   );
 
   house
