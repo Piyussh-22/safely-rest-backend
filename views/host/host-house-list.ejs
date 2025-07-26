@@ -44,13 +44,13 @@
             
             <div class="px-4 pb-4 flex flex-row gap-2">
               <a
-                href="/host/edit-house/<%=house.houseID%>?editing=true"
+                href="/host/edit-house/<%=house._id%>?editing=true"
                 class="block bg-amber-600 hover:bg-amber-700 text-white text-center py-2 rounded transition flex-1"
               >
                 Edit
               </a>
               
-              <form action="/host/delete-house/<%=house.houseID%>" class="flex-1" method="POST">
+              <form action="/host/delete-house/<%=house._id%>" class="flex-1" method="POST">
               <button type="submit"   class="block bg-amber-600 hover:bg-amber-700 text-white text-center py-2 rounded transition w-full">
                 Delete
               </button>

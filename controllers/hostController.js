@@ -12,14 +12,14 @@ export const getAddHouse = (req, res) => {
 
 // GET: Edit House Form
 export const getEditHouse = (req, res) => {
-  const houseID = req.params.houseID;
+  const houseId = req.params.houseId;
   const editing = req.query.editing === "true";
 
   if (!editing) {
     return res.redirect("/host/host-house-list");
   }
 
-  House.findById(houseID)
+  House.findById(houseId)
     .then((house) => {
       if (!house) {
         return res.redirect("/host/host-house-list");
@@ -33,7 +33,7 @@ export const getEditHouse = (req, res) => {
       });
     })
     .catch((err) => {
-      console.error("Error loading house for edit:", err);
+      console.error("Error loading house for edit:", err.message);
       res.redirect("/host/host-house-list");
     });
 };
@@ -49,61 +49,74 @@ export const getHostHouses = (req, res) => {
       });
     })
     .catch((err) => {
-      console.error("Error fetching host houses:", err);
+      console.error("Error fetching host houses:", err.message);
       res.redirect("/");
     });
 };
 
 // POST: Add New House
 export const postAddHouse = (req, res) => {
-  const { name, price, rating, location, photoUrl, description } = req.body;
+  const { name, price, location, rating, photoUrl, description } = req.body;
 
   const house = new House(
-    null,
     name,
-    price,
-    rating,
+    Number(price),
     location,
-    photoUrl,
-    description
-  );
-
-  house.save().then(() => {
-    console.log("home saved done");
-  });
-};
-
-// POST: Update Existing House
-export const postEditHouse = (req, res) => {
-  const { houseID, name, price, rating, location, photoUrl, description } =
-    req.body;
-
-  const house = new House(
-    houseID,
-    name,
-    price,
-    rating,
-    location,
+    Number(rating),
     photoUrl,
     description
   );
 
   house
-    .save()
-    .then(() => res.redirect("/host/host-house-list"))
+    .saveOrUpdate()
+    .then(() => {
+      console.log("House added");
+      res.redirect("/host/host-house-list");
+    })
     .catch((err) => {
-      console.error("Error updating house:", err);
+      console.error("Error adding house:", err.message);
+      res.redirect("/host/host-house-list");
+    });
+};
+
+// POST: Update Existing House
+export const postEditHouse = (req, res) => {
+  const { houseId, name, price, location, rating, photoUrl, description } =
+    req.body;
+
+  const house = new House(
+    name,
+    Number(price),
+    location,
+    Number(rating),
+    photoUrl,
+    description,
+    houseId
+  );
+
+  house
+    .saveOrUpdate()
+    .then(() => {
+      console.log("House updated:", houseId);
+      res.redirect("/host/host-house-list");
+    })
+    .catch((err) => {
+      console.error("Error updating house:", err.message);
       res.redirect("/host/host-house-list");
     });
 };
 
 // POST: Delete House
 export const postDeleteHouse = (req, res) => {
-  const houseID = req.params.houseID;
-  House.deleteById(houseID)
-    .then(() => res.redirect("/host/host-house-list"))
+  const houseId = req.params.houseId;
+
+  House.deleteById(houseId)
+    .then(() => {
+      console.log("House deleted:", houseId);
+      res.redirect("/host/host-house-list");
+    })
     .catch((err) => {
-      console.error("Error deleting house:", err);
+      console.error("Error deleting house:", err.message);
       res.redirect("/host/host-house-list");
     });
 };

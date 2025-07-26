@@ -30,8 +30,8 @@ app.use("/host", hostRouter);
 app.use(get404);
 
 // Start server
-const PORT = 4000;
-mongoConnect(() => {
+const PORT = process.env.PORT || 4000;
+mongoConnect().then(() => {
   app.listen(PORT, () => {
     console.log(`🟢 live at ${PORT}`);
   });

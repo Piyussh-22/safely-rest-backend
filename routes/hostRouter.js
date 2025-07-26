@@ -1,23 +1,22 @@
-// external module
+// External module
 import express from "express";
 const hostRouter = express.Router();
 
-// local controller
+// Local controller
 import * as hostController from "../controllers/hostController.js";
 
-// 🟢 Add House (Form + Submission)
-hostRouter.get("/add-house", hostController.getAddHouse); // GET Form
-hostRouter.post("/add-house", hostController.postAddHouse); // POST Save New
+// Add a new house
+hostRouter.get("/add-house", hostController.getAddHouse);
+hostRouter.post("/add-house", hostController.postAddHouse);
 
-// 🟡 Edit House (Form + Submission)
-hostRouter.get("/edit-house/:houseID", hostController.getEditHouse); // GET Form
-hostRouter.post("/edit-house", hostController.postEditHouse); // POST Update
+// Edit an existing house
+hostRouter.get("/edit-house/:houseId", hostController.getEditHouse);
+hostRouter.post("/edit-house", hostController.postEditHouse);
 
-// 🔴 Delete House
-hostRouter.post("/delete-house/:houseID", hostController.postDeleteHouse);
+// Delete a house
+hostRouter.post("/delete-house/:houseId", hostController.postDeleteHouse);
 
-// 🟣 Show All Houses (List)
+// Show all houses hosted by the user
 hostRouter.get("/host-house-list", hostController.getHostHouses);
 
-// DONE
 export default hostRouter;

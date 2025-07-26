@@ -14,7 +14,7 @@
         class="space-y-4"
       >
         <% if (editing) { %>
-          <input type="hidden" name="houseID" value="<%= house.houseID %>" />
+          <input type="hidden" name="houseId" value="<%= house._id %>" />
         <% } %>
 
         <div>
@@ -68,7 +68,7 @@
         </div>
 
         <div>
-          <label class="block mb-1 font-medium text-gray-700">Photo URL</label>
+          <label class="block mb-1 font-medium text-gray-700">Photo Url</label>
           <input
             type="url"
             name="photoUrl"

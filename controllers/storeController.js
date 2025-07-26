@@ -13,33 +13,39 @@ export const getIndex = (req, res) => {
       });
     })
     .catch((err) => {
-      console.error("Error loading index:", err);
+      console.error("Error loading index:", err.message);
       res.redirect("/");
     });
 };
 
 // House List Page
-export const getHouses = (req, res) => {
-  House.fetchAll()
-    .then((registeredHouses) => {
-      console.log(registeredHouses);
-      res.render("store/house-list", {
-        registeredHouses,
-        pageTitle: "Houses List",
-        currentPage: "house-list",
-      });
-    })
-    .catch((err) => {
-      console.error("Error loading houses:", err);
-      res.redirect("/");
+export const getHouses = async (req, res) => {
+  try {
+    const allHouses = await House.fetchAll();
+    const favDocs = await Favourite.getFavouriteHouseIds();
+    const favIds = favDocs.map((f) => String(f.houseId));
+
+    const registeredHouses = allHouses.map((house) => ({
+      ...house,
+      isFav: favIds.includes(String(house._id)),
+    }));
+
+    res.render("store/house-list", {
+      registeredHouses,
+      pageTitle: "Houses List",
+      currentPage: "house-list",
     });
+  } catch (err) {
+    console.error("Error loading houses:", err.message);
+    res.redirect("/");
+  }
 };
 
 // House Detail Page
 export const getHouseDetails = (req, res) => {
-  const houseID = req.params.houseID;
+  const houseId = req.params.houseId;
 
-  House.findById(houseID)
+  House.findById(houseId)
     .then((house) => {
       if (!house) {
         return res.redirect("/house-list");
@@ -52,7 +58,7 @@ export const getHouseDetails = (req, res) => {
       });
     })
     .catch((err) => {
-      console.error("Error loading house detail:", err);
+      console.error("Error loading house detail:", err.message);
       res.redirect("/house-list");
     });
 };
@@ -66,47 +72,52 @@ export const getBookings = (req, res) => {
 };
 
 // Favourite List Page
-export const getFavouriteList = (req, res) => {
-  Favourite.getFavourites((favourites) => {
-    House.fetchAll()
-      .then((registeredHouses) => {
-        const favouriteHouses = registeredHouses.filter((house) =>
-          favourites.includes(house.houseID)
-        );
+export const getFavouriteList = async (req, res) => {
+  try {
+    const favDocs = await Favourite.getFavouriteHouseIds();
+    const favIds = favDocs.map((f) => String(f.houseId));
 
-        res.render("store/favourite-list", {
-          favouriteHouses,
-          pageTitle: "My Favourite Houses",
-          currentPage: "favourite-list",
-        });
-      })
-      .catch((err) => {
-        console.error("Error loading favourites:", err);
-        res.redirect("/");
-      });
-  });
+    const allHouses = await House.fetchAll();
+
+    const favouriteHouses = allHouses
+      .filter((house) => favIds.includes(String(house._id)))
+      .map((house) => ({ ...house, isFav: true }));
+
+    res.render("store/favourite-list", {
+      favouriteHouses,
+      pageTitle: "My Favourite Houses",
+      currentPage: "favourite-list",
+    });
+  } catch (err) {
+    console.error("Error loading favourites:", err.message);
+    res.redirect("/");
+  }
 };
 
-// Add to Favourites
-export const postAddToFavourites = (req, res) => {
-  const houseID = req.body.id;
+// Add or Remove from Favourites (Toggle)
+export const postAddToFavourites = async (req, res) => {
+  const houseId = req.body.houseId;
 
-  Favourite.addToFavourite(houseID, (error) => {
-    if (error) {
-      console.error("Error adding to favourites:", error);
-    }
+  try {
+    const fav = new Favourite(houseId);
+    await fav.addOrRemoveFav();
     res.redirect("/favourite-list");
-  });
+  } catch (err) {
+    console.error("Error toggling favourite:", err.message);
+    res.redirect("back");
+  }
 };
 
-// Remove from Favourites
+// Remove from Favourites (Direct Delete)
 export const postRemoveFavourite = (req, res) => {
   const houseId = req.params.houseId;
 
-  Favourite.deleteById(houseId, (error) => {
-    if (error) {
-      console.error("Error removing from favourites:", error);
-    }
-    res.redirect("/favourite-list");
-  });
+  Favourite.removeFavById(houseId)
+    .then(() => {
+      res.redirect("/favourite-list");
+    })
+    .catch((err) => {
+      console.error("Error removing from favourites:", err.message);
+      res.redirect("back");
+    });
 };

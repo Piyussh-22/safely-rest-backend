@@ -1,15 +1,21 @@
 <form
-  action="/favourite-list/<%= house.houseID %>"
+  action="<%= isFavPage ? '/favourites/delete/' + house._id : '/favourite-list' %>"
   method="POST"
   class="flex-1 flex justify-center items-center"
 >
-  <input type="hidden" name="houseID" value="<%= house.houseID %>" />
+  <% if (!isFavPage) { %>
+  <input type="hidden" name="houseId" value="<%= house._id %>" />
+  <% } %>
+
   <button
     type="submit"
-    class="w-full h-full bg-red-500 hover:bg-red-700 text-white rounded transition flex justify-center items-center"
-    title="Remove from Favourites"
-    aria-label="Remove from Favourites"
+    class="w-full h-full transition hover:scale-105 rounded flex justify-center items-center <%= isFavPage ? 'bg-red-500 hover:bg-red-700 text-white' : 'bg-gray-200 hover:bg-gray-300 text-red-500' %>"
+    title="<%= isFavPage ? 'Remove from Favourites' : 'Add to Favourites' %>"
+    aria-label="<%= isFavPage ? 'Remove from Favourites' : 'Add to Favourites' %>"
   >
-    <i data-lucide="heart-off"></i>
+    <i
+      data-lucide="<%= isFavPage ? 'heart-off' : (house.isFav ? 'heart' : 'heart-plus') %>"
+      class="<%= isFavPage || house.isFav ? 'fill-red-500' : 'stroke-red-500' %> w-6 h-6"
+    ></i>
   </button>
 </form>

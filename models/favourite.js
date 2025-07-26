@@ -1,32 +1,45 @@
-//core modules
-import fs from "fs";
-import path from "path";
-import rootDir from "../utils/pathUtil.js";
-
-const favouriteDataPath = path.join(rootDir, "data", "favourite.json");
+import { ObjectId } from "mongodb";
+import { getDB } from "../utils/databaseUtil.js";
 
 export class Favourite {
-  static addToFavourite(houseId, callback) {
-    Favourite.getFavourites((favourites) => {
-      if (favourites.includes(houseId)) {
-        console.log("house is already fav marked");
-      } else {
-        favourites.push(houseId);
-        fs.writeFile(favouriteDataPath, JSON.stringify(favourites), callback);
-      }
-    });
+  constructor(houseId) {
+    this.houseId = houseId;
   }
 
-  static getFavourites(callback) {
-    fs.readFile(favouriteDataPath, (err, data) => {
-      callback(!err ? JSON.parse(data) : []);
-    });
+  validate() {
+    if (!this.houseId || typeof this.houseId !== "string") {
+      throw new Error("houseId must be a non-empty string.");
+    }
   }
 
-  static deleteById(delHouseId, callback) {
-    Favourite.getFavourites((houseIds) => {
-      houseIds = houseIds.filter((houseId) => houseId !== delHouseId);
-      fs.writeFile(favouriteDataPath, JSON.stringify(houseIds), callback);
-    });
+  async addOrRemoveFav() {
+    this.validate();
+    const db = getDB();
+    const houseId = String(this.houseId);
+    const existingFav = await db.collection("favourites").findOne({ houseId });
+
+    if (existingFav) {
+      return db.collection("favourites").deleteOne({ houseId });
+    } else {
+      return db.collection("favourites").insertOne({ houseId });
+    }
+  }
+
+  static getFavourites() {
+    const db = getDB();
+    return db.collection("favourites").find().toArray();
+  }
+
+  static removeFavById(houseId) {
+    const db = getDB();
+    return db.collection("favourites").deleteOne({ houseId: String(houseId) });
+  }
+
+  static getFavouriteHouseIds() {
+    const db = getDB();
+    return db
+      .collection("favourites")
+      .find({}, { projection: { houseId: 1, _id: 0 } })
+      .toArray();
   }
 }

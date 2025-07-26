@@ -2,26 +2,26 @@ import { MongoClient } from "mongodb";
 
 const URL = process.env.MONGODB_URI;
 
-let _DB;
+let db; // holds the connected DB instance
 
-const mongoConnect = (callback) => {
-  MongoClient.connect(URL)
-    .then((client) => {
-      console.log("🟢 Connected to MongoDB");
-      _DB = client.db("safely_rest");
-      callback();
-    })
-    .catch((err) => {
-      console.log("🔴 Error while connecting to MongoDB", err);
-      throw err;
-    });
+// Connect to MongoDB (called in app.js)
+const mongoConnect = async () => {
+  try {
+    const client = await MongoClient.connect(URL);
+    console.log("🟢 Connected to MongoDB");
+    db = client.db("safely_rest");
+  } catch (err) {
+    console.log("🔴 Error while connecting to MongoDB", err);
+    throw err;
+  }
 };
 
+// Get the connected DB instance
 const getDB = () => {
-  if (!_DB) {
-    throw new Error("DB not connected");
+  if (!db) {
+    throw new Error("Database not connected");
   }
-  return _DB;
+  return db;
 };
 
 export { mongoConnect, getDB };

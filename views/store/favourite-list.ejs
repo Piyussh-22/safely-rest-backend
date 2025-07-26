@@ -6,7 +6,7 @@
     <h1 class="text-3xl font-bold text-center mb-8 text-red-500">
       My Favourite Houses
     </h1>
-    
+
     <% if (favouriteHouses.length === 0) { %>
       <p class="text-center text-gray-400">No favourite yet!</p>
     <% } else { %>
@@ -22,7 +22,7 @@
 
             <!-- Price/Rating + Name/Location Section -->
             <div class="flex justify-between p-4">
-              <!-- Left Side: Price & Rating -->
+              <!-- Left: Price & Rating -->
               <div class="flex flex-col">
                 <span class="text-lg font-semibold text-gray-800">
                   ₹<%= house.price %>
@@ -30,7 +30,7 @@
                 <span class="text-yellow-500">⭐ <%= house.rating %>/5</span>
               </div>
 
-              <!-- Right Side: House Name & Location -->
+              <!-- Right: Name & Location -->
               <div class="flex flex-col text-right">
                 <span class="font-bold text-gray-900">
                   <%= house.name %>
@@ -41,32 +41,23 @@
               </div>
             </div>
 
-            <!-- view / fav / book Button -->
+            <!-- Buttons -->
             <div class="px-4 pb-4 flex flex-row gap-2">
+              <!-- View -->
               <a
-                href="/houses/<%= house.id %>"
+                href="/houses/<%= house._id %>"
                 class="block bg-amber-600 hover:bg-amber-700 text-white text-center py-2 rounded transition flex-1"
               >
-                View 
+                View
               </a>
-              <form
-                  action="/favourites/delete/<%= house.id %>"
-                  method="POST"
-                  class="flex-1 flex justify-center items-center"
-                >
-                  <input type="hidden" name="id" value="<%= house.id %>" />
-                  <button
-                    type="submit"
-                    class="w-full h-full bg-red-500 hover:bg-red-700 text-white rounded transition flex justify-center items-center"
-                    title="Remove from Favourites"
-                    aria-label="Remove from Favourites"
-                  >
-                    <i data-lucide="heart-off"></i>
-                  </button>
-                </form>
 
+              <!-- Remove from Favourites -->
+              <%- include('../partials/favourite', { house, isFavPage: true }) %>
+
+
+              <!-- Book (placeholder) -->
               <button class="block bg-amber-600 hover:bg-amber-700 text-white text-center py-2 rounded transition flex-1">
-                book
+                Book
               </button>
             </div>
           </div>
@@ -74,6 +65,7 @@
       </div>
     <% } %>
   </main>
+
   <script>
     lucide.createIcons();
   </script>
