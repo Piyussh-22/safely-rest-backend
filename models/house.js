@@ -1,81 +1,50 @@
-import { ObjectId } from "mongodb";
-import { getDB } from "../utils/databaseUtil.js";
+import mongoose from "mongoose";
+import { Favourite } from "./favourite.js";
 
-export class House {
-  constructor(name, price, location, rating, photoUrl, description, _id) {
-    this.name = name;
-    this.price = price;
-    this.location = location;
-    this.rating = rating;
-    this.photoUrl = photoUrl;
-    this.description = description;
-    if (_id) {
-      this._id = _id;
-    }
+const houseSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "House name is required"],
+      trim: true,
+    },
+    price: {
+      type: Number,
+      required: [true, "Price is required"],
+      validate: {
+        validator: (val) => !isNaN(val),
+        message: "Price must be a valid number",
+      },
+    },
+    location: {
+      type: String,
+      required: [true, "Location is required"],
+    },
+    rating: {
+      type: Number,
+      min: [0, "Rating must be at least 0"],
+      max: [5, "Rating must be at most 5"],
+      default: 0,
+    },
+    photoUrl: {
+      type: String,
+      required: [true, "Photo URL is required"],
+    },
+    description: {
+      type: String,
+      required: [true, "Description is required"],
+    },
+  },
+  {
+    timestamps: true,
   }
+);
 
-  validate() {
-    if (!this.name || typeof this.name !== "string") {
-      throw new error("Name must be non-empty string");
-    }
-    if (typeof this.price !== "number" || isNaN(this.price)) {
-      throw new Error("Price must be a valid number.");
-    }
-    if (!this.location || typeof this.location !== "string") {
-      throw new Error("Location must be a non-empty string.");
-    }
-    if (typeof this.rating !== "number" || this.rating < 0 || this.rating > 5) {
-      throw new Error("Rating must be a number between 0 and 5.");
-    }
-    if (!this.photoUrl || typeof this.photoUrl !== "string") {
-      throw new Error("Photo URL must be a string.");
-    }
-    if (!this.description || typeof this.description !== "string") {
-      throw new Error("Description must be a string.");
-    }
-  }
+//Cascade delete: Remove from Favourite when a house is deleted
+houseSchema.pre("findOneAndDelete", async function (next) {
+  const houseId = this.getQuery()._id;
+  await Favourite.deleteMany({ houseId });
+  next();
+});
 
-  saveOrUpdate() {
-    this.validate();
-    const db = getDB();
-    if (this._id) {
-      //update
-      const updateFields = {
-        name: this.name,
-        price: this.price,
-        location: this.location,
-        rating: this.rating,
-        photoUrl: this.photoUrl,
-        description: this.description,
-      };
-      return db
-        .collection("houses")
-        .updateOne(
-          { _id: new ObjectId(String(this._id)) },
-          { $set: updateFields }
-        );
-    } else {
-      //new house insert
-      return db.collection("houses").insertOne(this);
-    }
-  }
-
-  static fetchAll() {
-    const db = getDB();
-    return db.collection("houses").find().toArray();
-  }
-
-  static findById(houseId) {
-    const db = getDB();
-    return db
-      .collection("houses")
-      .findOne({ _id: new ObjectId(String(houseId)) });
-  }
-
-  static deleteById(houseId) {
-    const db = getDB();
-    return db
-      .collection("houses")
-      .deleteOne({ _id: new ObjectId(String(houseId)) });
-  }
-}
+export const House = mongoose.model("House", houseSchema);
