@@ -6,17 +6,13 @@
     >
       Safely Rest
     </a>
+
+    <% if (isLoggedIn) { %>
     <a
       href="/house-list"
       class="<%= currentPage === 'house-list' ? 'bg-red-400' : 'hover:bg-red-400' %> px-2 py-2 rounded transition font-bold text-xl"
     >
       Houses
-    </a>
-    <a
-      href="/bookings"
-      class="<%= currentPage === 'bookings' ? 'bg-red-400' : 'hover:bg-red-400' %> px-2 py-2 rounded transition font-bold text-xl"
-    >
-      Booking
     </a>
     <a
       href="/favourite-list"
@@ -36,5 +32,21 @@
     >
       Add House
     </a>
+    <form action="/logout" method="POST" class="inline">
+      <button
+        type="submit"
+        class="<%= currentPage === 'logout' ? 'bg-red-400' : 'hover:bg-red-400' %> px-2 py-2 rounded transition font-bold text-xl"
+      >
+        Logout
+      </button>
+    </form>
+    <% } else { %>
+    <a
+      href="/login"
+      class="<%= currentPage === 'LogIn' ? 'bg-red-400' : 'hover:bg-red-400' %> px-2 py-2 rounded transition font-bold text-xl"
+    >
+      Log In
+    </a>
+    <% } %>
   </nav>
 </header>

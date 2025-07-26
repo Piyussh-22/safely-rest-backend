@@ -1,32 +1,60 @@
-//core
+// Core
 import path from "path";
-//external
+
+// External
 import express from "express";
 import "dotenv/config";
-//local
+import session from "express-session";
+import connectMongoDBSession from "connect-mongodb-session";
+
+// Local
+import authRouter from "./routes/authRouter.js";
 import storeRouter from "./routes/storeRouter.js";
 import hostRouter from "./routes/hostRouter.js";
 import rootDir from "./utils/pathUtil.js";
 import { get404 } from "./controllers/404Controller.js";
 import { mongoConnect } from "./utils/databaseUtil.js";
+import { isAuth } from "./controllers/authController.js";
 
 const app = express();
 
-//ejs boilerplate
+// Setup session store
+const MongoDBStore = connectMongoDBSession(session);
+const store = new MongoDBStore({
+  uri: process.env.MONGODB_URI,
+  collection: "sessions",
+});
+
+// View engine
 app.set("view engine", "ejs");
 app.set("views", "views");
 
-// Middleware to parse URL-encoded form data
+// Middleware
 app.use(express.urlencoded({ extended: false }));
-
-// Serve static files from "public" folder (like CSS, images, etc.)
 app.use(express.static(path.join(rootDir, "public")));
 
-// Routers
-app.use("/", storeRouter);
-app.use("/host", hostRouter);
+app.use(
+  session({
+    secret: "safely-rest-secret",
+    resave: false,
+    saveUninitialized: false,
+    store: store,
+  })
+);
 
-// 404 Page Handler
+// Attach login status to every view
+app.use((req, res, next) => {
+  req.isLoggedIn = req.session.isLoggedIn;
+  res.locals.isLoggedIn = req.session.isLoggedIn;
+  next();
+});
+
+// Routes
+app.use("/", storeRouter);
+app.use("/host", isAuth, hostRouter);
+app.use(authRouter);
+
+// 404 handler
 app.use(get404);
 
 // Start server
