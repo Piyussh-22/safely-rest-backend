@@ -1,67 +1,45 @@
-// Core
-import path from "path";
-
 // External
 import express from "express";
 import "dotenv/config";
-import session from "express-session";
-import connectMongoDBSession from "connect-mongodb-session";
 
 // Local
-import authRouter from "./routes/authRouter.js";
-import storeRouter from "./routes/storeRouter.js";
-import hostRouter from "./routes/hostRouter.js";
-import rootDir from "./utils/pathUtil.js";
-import { get404 } from "./controllers/404Controller.js";
-import { mongoConnect } from "./utils/databaseUtil.js";
-import { isAuth } from "./controllers/authController.js";
+import authRoutes from "./src/routes/auth.routes.js";
+import storeRoutes from "./src/routes/store.routes.js";
+import hostRoutes from "./src/routes/host.routes.js";
+import { connectDB } from "./src/utils/db.util.js";
+import { authenticate } from "./src/middlewares/authenticate.js";
+import { errorHandler } from "./src/middlewares/errorHandler.js";
+import { setupApp } from "./src/config/setupApp.config.js";
+import { createSessionStore } from "./src/config/session.config.js";
+import { ROLES } from "./src/constants/roles.js";
 
 const app = express();
 
-// Setup session store
-const MongoDBStore = connectMongoDBSession(session);
-const store = new MongoDBStore({
-  uri: process.env.MONGODB_URI,
-  collection: "sessions",
-});
+// Setup MongoDB session store
+const sessionStore = createSessionStore();
 
-// View engine
-app.set("view engine", "ejs");
-app.set("views", "views");
+// Apply all middlewares from config
+setupApp(app, sessionStore);
 
-// Middleware
-app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(rootDir, "public")));
-
-app.use(
-  session({
-    secret: "safely-rest-secret",
-    resave: false,
-    saveUninitialized: false,
-    store: store,
-  })
-);
-
-// Attach login status to every view
-app.use((req, res, next) => {
-  req.isLoggedIn = req.session.isLoggedIn;
-  res.locals.isLoggedIn = req.session.isLoggedIn;
-  res.locals.user = req.session.user || null;
-  next();
-});
-
-// Routes
-app.use("/", storeRouter);
-app.use("/host", isAuth, hostRouter);
-app.use(authRouter);
+// API Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/store", storeRoutes);
+app.use("/api/host", authenticate([ROLES.HOST]), hostRoutes);
+// Example: Admin-only routes in the future
+// app.use("/api/admin", authenticate([ROLES.ADMIN]), adminRoutes);
 
 // 404 handler
-app.use(get404);
+app.use((req, res) => {
+  res.status(404).json({ message: "Route not found" });
+});
+
+// Global error handler
+app.use(errorHandler);
 
 // Start server
 const PORT = process.env.PORT || 4000;
-mongoConnect().then(() => {
-  app.listen(PORT, () => {
-    console.log(`🟢 live at ${PORT}`);
-  });
+connectDB().then(() => {
+  app.listen(PORT, () =>
+    console.log(`✅ Server running at http://localhost:${PORT}`)
+  );
 });

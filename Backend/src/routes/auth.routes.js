@@ -1,20 +1,18 @@
 import { body } from "express-validator";
 import express from "express";
 import {
-  getLogin,
   postLogin,
-  getSignup,
   postSignup,
   postLogout,
-} from "../controllers/authController.js";
+} from "../controllers/auth.controller.js";
 
-const authRouter = express.Router();
+const authRoutes = express.Router();
 
-authRouter.get("/login", getLogin);
-authRouter.post("/login", postLogin);
-authRouter.get("/signup", getSignup);
+// POST: Login
+authRoutes.post("/login", postLogin);
 
-authRouter.post(
+// POST: Signup with validations
+authRoutes.post(
   "/signup",
   [
     body("firstName").notEmpty().withMessage("First name is required"),
@@ -32,13 +30,11 @@ authRouter.post(
     body("userType")
       .isIn(["guest", "host"])
       .withMessage("User type must be guest or host"),
-    body("terms")
-      .equals("on")
-      .withMessage("You must accept the terms and conditions"),
   ],
   postSignup
 );
 
-authRouter.post("/logout", postLogout);
+// POST: Logout
+authRoutes.post("/logout", postLogout);
 
-export default authRouter;
+export default authRoutes;
