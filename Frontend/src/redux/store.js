@@ -1,9 +1,14 @@
+// src/redux/store.js
 import { configureStore } from "@reduxjs/toolkit";
-import favReducer from "./favSlice";
+import authReducer from "./authSlice";
+import houseReducer from "./houseSlice";
+import favouriteReducer from "./favouriteSlice";
 
 const store = configureStore({
   reducer: {
-    favourite: favReducer,
+    auth: authReducer,
+    houses: houseReducer,
+    favourites: favouriteReducer,
   },
 });
 

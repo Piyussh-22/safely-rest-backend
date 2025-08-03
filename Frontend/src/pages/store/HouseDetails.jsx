@@ -1,13 +1,13 @@
-// HouseDetails.jsx
+/*
+  🚧 Features to implement later:
+  - Fetch house details from API using ID (from URL params)
+  - Show loading & error states
+  - Add FavButton (toggle favourite)
+  - Implement "Book Now" button functionality
+  - Add responsive enhancements if needed
+*/
 
-// 🛠️ FUNCTIONALITY TO ADD LATER:
-// 1. Fetch house details from API using house ID from URL
-// 2. Show loading and error states
-// 3. Add "Favourite" button toggle
-// 4. Add "Book Now" button or availability calendar (optional)
-// 5. Responsive enhancements if needed
-
-import React from "react";
+import FavButton from "../../components/FavButton";
 
 const dummyHouse = {
   name: "Cozy Hilltop Cabin",
@@ -34,11 +34,9 @@ const HouseDetails = () => {
 
         {/* Content */}
         <div className="p-6 space-y-4">
-          <h1 className="text-3xl font-medium tracking-tight text-[#111]">
-            {house.name}
-          </h1>
+          <h1 className="text-3xl font-semibold text-gray-900">{house.name}</h1>
 
-          <p className="text-base text-gray-600">{house.location}</p>
+          <p className="text-lg text-blue-700">{house.location}</p>
 
           <div className="grid grid-cols-2 gap-4 pt-2 text-sm text-gray-700">
             <div>
@@ -47,13 +45,20 @@ const HouseDetails = () => {
             </div>
             <div>
               <span className="text-gray-500">Rating</span>
-              <br />
-              {house.rating}/5
+              <br />⭐ {house.rating}/5
             </div>
           </div>
 
           <div className="pt-4 border-t text-sm leading-relaxed text-gray-700 whitespace-pre-line">
             {house.description}
+          </div>
+
+          {/* Buttons */}
+          <div className="flex items-center gap-4 pt-6 border-t">
+            <FavButton isFavourite={false} />
+            <button className="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded transition">
+              Book Now
+            </button>
           </div>
         </div>
       </section>

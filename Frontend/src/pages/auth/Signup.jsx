@@ -1,16 +1,11 @@
-// pages/auth/Signup.jsx
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-// ✅ TODOs:
-// 1. Connect form to backend `/signup` using fetch/axios.
-// 2. Validate password === confirmPassword.
-// 3. Handle errors from backend and display.
-// 4. Redirect on success to /login or dashboard.
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "../../redux/authSlice";
 
 export default function Signup() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -44,21 +39,20 @@ export default function Signup() {
     }
 
     try {
-      const res = await fetch("/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      // ✅ Simulate API response for now
+      const mockUser = {
+        id: "456",
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        type: formData.userType, // "guest" or "host"
+      };
 
-      const data = await res.json();
+      // ✅ Dispatch login after signup
+      dispatch(loginSuccess(mockUser));
 
-      if (!res.ok) {
-        setErrorMessage(data.message || "Signup failed");
-      } else {
-        navigate("/login");
-      }
+      navigate("/"); // Redirect to home page
     } catch (err) {
-      setErrorMessage("Server error");
+      setErrorMessage("Signup failed", err);
     }
   };
 
@@ -77,107 +71,88 @@ export default function Signup() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* First Name & Last Name */}
           <div className="flex gap-2">
             <div className="flex-1">
-              <label
-                htmlFor="firstName"
-                className="block text-sm font-semibold text-gray-700"
-              >
+              <label className="block text-sm font-semibold text-gray-700">
                 First Name
               </label>
               <input
                 type="text"
                 name="firstName"
-                id="firstName"
-                required
                 value={formData.firstName}
                 onChange={handleChange}
+                required
                 className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2"
               />
             </div>
             <div className="flex-1">
-              <label
-                htmlFor="lastName"
-                className="block text-sm font-semibold text-gray-700"
-              >
+              <label className="block text-sm font-semibold text-gray-700">
                 Last Name
               </label>
               <input
                 type="text"
                 name="lastName"
-                id="lastName"
-                required
                 value={formData.lastName}
                 onChange={handleChange}
+                required
                 className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2"
               />
             </div>
           </div>
 
+          {/* Email */}
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-semibold text-gray-700"
-            >
+            <label className="block text-sm font-semibold text-gray-700">
               Email
             </label>
             <input
               type="email"
               name="email"
-              id="email"
-              required
               value={formData.email}
               onChange={handleChange}
+              required
               className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2"
             />
           </div>
 
+          {/* Password */}
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-semibold text-gray-700"
-            >
+            <label className="block text-sm font-semibold text-gray-700">
               Password
             </label>
             <input
               type="password"
               name="password"
-              id="password"
-              required
               value={formData.password}
               onChange={handleChange}
+              required
               className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2"
             />
           </div>
 
+          {/* Confirm Password */}
           <div>
-            <label
-              htmlFor="confirmPassword"
-              className="block text-sm font-semibold text-gray-700"
-            >
+            <label className="block text-sm font-semibold text-gray-700">
               Confirm Password
             </label>
             <input
               type="password"
               name="confirmPassword"
-              id="confirmPassword"
-              required
               value={formData.confirmPassword}
               onChange={handleChange}
+              required
               className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2"
             />
           </div>
 
+          {/* User Type */}
           <div>
-            <label
-              htmlFor="userType"
-              className="block text-sm font-semibold text-gray-700"
-            >
+            <label className="block text-sm font-semibold text-gray-700">
               User Type
             </label>
             <select
               name="userType"
-              id="userType"
               value={formData.userType}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded-lg px-4 py-2"
@@ -187,20 +162,21 @@ export default function Signup() {
             </select>
           </div>
 
+          {/* Terms */}
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
               name="termsAccepted"
-              id="terms"
               checked={formData.termsAccepted}
               onChange={handleChange}
               required
             />
-            <label htmlFor="terms" className="text-sm text-gray-700">
+            <label className="text-sm text-gray-700">
               I agree to the terms and conditions
             </label>
           </div>
 
+          {/* Submit */}
           <button
             type="submit"
             className="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg font-semibold transition"
@@ -210,9 +186,8 @@ export default function Signup() {
         </form>
 
         <p className="text-center text-sm text-gray-500">
-          Already have an account?
+          Already have an account?{" "}
           <a href="/login" className="text-red-500 hover:underline">
-            {" "}
             Log In
           </a>
         </p>

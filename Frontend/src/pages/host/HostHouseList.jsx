@@ -1,65 +1,100 @@
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+/*
+  🚧 Features to implement later:
+  - Fetch host's registered houses from API or Redux
+  - Implement delete functionality with API
+  - Navigate to edit page with correct house data
+*/
 
-// 🧠 Props:
-// - registeredHouses: array of house objects (from API or context)
-// - onDelete: (id) => handle delete logic (e.g. API call, state update)
-export default function HostHouseList({ registeredHouses = [], onDelete }) {
+import { useNavigate } from "react-router-dom";
+
+const dummyHostHouses = [
+  {
+    _id: "1",
+    name: "Ocean View Villa",
+    location: "Goa",
+    price: 5000,
+    rating: 4.8,
+    photoUrl: "https://via.placeholder.com/300x200",
+  },
+  {
+    _id: "2",
+    name: "Hilltop Retreat",
+    location: "Manali",
+    price: 3500,
+    rating: 4.6,
+    photoUrl: "https://via.placeholder.com/300x200",
+  },
+];
+
+export default function HostHouseList({
+  registeredHouses = dummyHostHouses,
+  onDelete,
+}) {
   const navigate = useNavigate();
 
   if (!registeredHouses.length) {
     return (
-      <div className="text-center text-gray-400 mt-10">
-        No houses registered yet.
-      </div>
+      <main className="flex flex-col items-center justify-center min-h-[60vh] text-gray-400">
+        <p className="mb-4 text-lg">No houses listed yet.</p>
+        <button
+          onClick={() => navigate("/host/add-house")}
+          className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition"
+        >
+          Add Your First House
+        </button>
+      </main>
     );
   }
 
   return (
     <main className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-center mb-8 text-red-500">
-        Host mere Dost 🙏
+      <h1 className="text-3xl font-bold text-center mb-8 text-amber-600">
+        Your Listed Houses
       </h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {registeredHouses.map((house) => (
           <div
             key={house._id}
-            className="bg-white rounded-lg shadow-md overflow-hidden"
+            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
           >
+            {/* House Image */}
             <img
               src={house.photoUrl}
-              alt="House"
+              alt={house.name}
               className="w-full h-48 object-cover"
             />
 
+            {/* Info Section */}
             <div className="flex justify-between p-4">
-              <div className="flex flex-col">
+              <div>
                 <span className="text-lg font-semibold text-gray-800">
                   ₹{house.price}
                 </span>
-                <span className="text-yellow-500">⭐ {house.rating}/5</span>
+                <span className="block text-yellow-500">
+                  ⭐ {house.rating}/5
+                </span>
               </div>
-
-              <div className="flex flex-col text-right">
+              <div className="text-right">
                 <span className="font-bold text-gray-900">{house.name}</span>
-                <span className="text-gray-600">📍 {house.location}</span>
+                <span className="block text-gray-600">📍 {house.location}</span>
               </div>
             </div>
 
-            <div className="px-4 pb-4 flex flex-row gap-2">
+            {/* Action Buttons */}
+            <div className="px-4 pb-4 flex gap-2">
               <button
                 onClick={() =>
                   navigate(`/host/edit-house/${house._id}?editing=true`)
                 }
-                className="block bg-amber-600 hover:bg-amber-700 text-white text-center py-2 rounded transition flex-1"
+                className="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded transition"
               >
                 Edit
               </button>
 
               <button
-                onClick={() => onDelete(house._id)}
-                className="block bg-amber-600 hover:bg-amber-700 text-white text-center py-2 rounded transition flex-1"
+                onClick={() => onDelete && onDelete(house._id)}
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded transition"
               >
                 Delete
               </button>

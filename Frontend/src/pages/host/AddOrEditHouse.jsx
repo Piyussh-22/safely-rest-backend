@@ -1,11 +1,9 @@
-// components/EditOrAddHouseForm.jsx
-
 /*
-🛠️ To-Do: Functionality to add later (via props or API logic):
-- Accept a `house` prop for edit mode (null or undefined means add mode)
-- Accept `onSubmit` prop to handle form submit (API call or Redux dispatch)
-- Controlled form with state for inputs
-- Validation feedback
+  🚧 Features to implement later:
+  - Accept `house` prop for edit mode (null means add mode)
+  - Accept `onSubmit` prop to handle form submission (API or Redux)
+  - Add validation & error handling
+  - Integrate with backend to create/update house
 */
 
 import { useState } from "react";
@@ -29,18 +27,19 @@ const AddOrEditHouse = ({ house = null, onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // 🔁 To be replaced with backend integration
     if (onSubmit) onSubmit(formData);
+    // 🔁 Will integrate API or Redux later
   };
 
   return (
-    <main className="flex items-center justify-center min-h-[80vh] px-4 bg-gray-50">
-      <div className="w-full max-w-2xl bg-white rounded-xl shadow-md p-8 space-y-6">
-        <h1 className="text-3xl font-bold text-center text-amber-600 tracking-tight">
+    <main className="container mx-auto px-4 py-10">
+      <div className="bg-white rounded-xl shadow-md p-8 max-w-2xl mx-auto space-y-6">
+        <h1 className="text-3xl font-bold text-center text-amber-600">
           {editing ? "Edit House Details" : "List Your House"}
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* House Name */}
           <div>
             <label className="block mb-1 font-medium">House Name</label>
             <input
@@ -54,6 +53,7 @@ const AddOrEditHouse = ({ house = null, onSubmit }) => {
             />
           </div>
 
+          {/* Location */}
           <div>
             <label className="block mb-1 font-medium">Location</label>
             <input
@@ -67,6 +67,7 @@ const AddOrEditHouse = ({ house = null, onSubmit }) => {
             />
           </div>
 
+          {/* Price & Rating */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block mb-1 font-medium">Price (₹)</label>
@@ -79,7 +80,6 @@ const AddOrEditHouse = ({ house = null, onSubmit }) => {
                 className="w-full px-4 py-2 border rounded-lg"
               />
             </div>
-
             <div>
               <label className="block mb-1 font-medium">Rating (1–5)</label>
               <input
@@ -95,6 +95,7 @@ const AddOrEditHouse = ({ house = null, onSubmit }) => {
             </div>
           </div>
 
+          {/* Photo URL */}
           <div>
             <label className="block mb-1 font-medium">Photo URL</label>
             <input
@@ -108,6 +109,7 @@ const AddOrEditHouse = ({ house = null, onSubmit }) => {
             />
           </div>
 
+          {/* Description */}
           <div>
             <label className="block mb-1 font-medium">Description</label>
             <textarea
@@ -120,10 +122,11 @@ const AddOrEditHouse = ({ house = null, onSubmit }) => {
             ></textarea>
           </div>
 
+          {/* Submit Button */}
           <div className="pt-4">
             <button
               type="submit"
-              className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 rounded-lg shadow-sm transition"
+              className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 rounded-lg transition"
             >
               {editing ? "Update House" : "Add House"}
             </button>

@@ -1,112 +1,69 @@
-// src/components/Navbar.jsx
-
-/*
-  🚧 Functionality to add later (Backend Integration):
-  - Get `isLoggedIn` and `user` from Redux store (currently hardcoded)
-  - Replace <form method="POST"> logout with real handleLogout()
-  - On login: set Redux isLoggedIn + user
-  - Route protection based on user.type (guest/host)
-*/
-
-import { Link, useLocation } from "react-router-dom";
-// import { useSelector } from "react-redux"; ❌ not needed for now
+// components/Navbar.jsx
+import { useState } from "react";
+import LogoutConfirm from "./LogoutConfirm";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../redux/authSlice";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
-  const location = useLocation();
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  // TEMP: Hardcoded user for UI development
-  const isLoggedIn = true; // set to false to see login link
-  const user = { type: "guest" }; // change to "host" to see host links
-
-  const isActive = (path) =>
-    location.pathname === path ? "bg-red-400" : "hover:bg-red-400";
+  const handleLogout = () => {
+    dispatch(logout());
+    setShowLogoutModal(false);
+  };
 
   return (
-    <header className="bg-red-500 text-white shadow-md">
-      <nav className="container mx-auto flex justify-between items-center px-2 py-2">
-        <Link
-          to="/"
-          className={`${isActive(
-            "/"
-          )} px-2 py-2 rounded transition font-bold text-xl flex flex-row justify-center items-center gap-2`}
-          title="Index Page"
-        >
-          <img
-            src="../../public/logo.png"
-            alt="App Logo"
-            className="h-10 w-auto rounded-md"
-          />
-          <span>Safely Rest</span>
+    <>
+      <nav className="bg-gray-800 text-white px-6 py-4 flex justify-between items-center">
+        <Link to="/" className="text-2xl font-bold text-red-400">
+          Safely Rest
         </Link>
 
-        {isLoggedIn && user?.type === "guest" && (
-          <>
-            <Link
-              to="/house-list"
-              className={`${isActive(
-                "/house-list"
-              )} px-2 py-2 rounded transition font-bold text-xl`}
-              title="House List"
-            >
-              Houses
-            </Link>
-            <Link
-              to="/favourite-list"
-              className={`${isActive(
-                "/favourite-list"
-              )} px-2 py-2 rounded transition font-bold text-xl`}
-              title="Favourite List"
-            >
-              Favourite
-            </Link>
-          </>
-        )}
-
-        {isLoggedIn && user?.type === "host" && (
-          <>
-            <Link
-              to="/host/host-house-list"
-              className={`${isActive(
-                "/host/host-house-list"
-              )} px-2 py-2 rounded transition font-bold text-xl`}
-              title="Host House List"
-            >
-              Host
-            </Link>
-            <Link
-              to="/host/add-house"
-              className={`${isActive(
-                "/host/add-house"
-              )} px-2 py-2 rounded transition font-bold text-xl`}
-              title="Add/Edit House"
-            >
-              Add House
-            </Link>
-          </>
-        )}
-
-        {isLoggedIn ? (
-          <button
-            className={`${isActive(
-              "/logout"
-            )} px-2 py-2 rounded transition font-bold text-xl`}
-            title="Click to Logout"
-          >
-            Logout
-          </button>
-        ) : (
-          <Link
-            to="/login"
-            className={`${isActive(
-              "/login"
-            )} px-2 py-2 rounded transition font-bold text-xl`}
-            title="LogIn Page"
-          >
-            Log In
+        <div className="flex items-center gap-4">
+          <Link to="/" className="hover:text-red-400">
+            Home
           </Link>
-        )}
+          <Link to="/houses" className="hover:text-red-400">
+            Houses
+          </Link>
+          {isAuthenticated && user?.type === "host" && (
+            <Link to="/host/dashboard" className="hover:text-red-400">
+              Host Dashboard
+            </Link>
+          )}
+          {!isAuthenticated ? (
+            <>
+              <Link to="/login" className="hover:text-red-400">
+                Login
+              </Link>
+              <Link to="/signup" className="hover:text-red-400">
+                Sign Up
+              </Link>
+            </>
+          ) : (
+            <>
+              <span className="font-medium">Hello, {user?.name}</span>
+              <button
+                onClick={() => setShowLogoutModal(true)}
+                className="bg-red-500 px-3 py-1 rounded hover:bg-red-600"
+              >
+                Logout
+              </button>
+            </>
+          )}
+        </div>
       </nav>
-    </header>
+
+      {/* Logout Modal */}
+      <LogoutConfirm
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={handleLogout}
+      />
+    </>
   );
 };
 
