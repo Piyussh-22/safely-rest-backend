@@ -2,7 +2,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  user: null, // { id, name, email, type: "guest" | "host" }
+  user: null, // { id, name, email, role: "guest" | "host" }
   isAuthenticated: false,
 };
 
@@ -11,7 +11,13 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     loginSuccess: (state, action) => {
-      state.user = action.payload; // Full user object
+      state.user = {
+        id: action.payload.id,
+        name: action.payload.name || "",
+        email: action.payload.email,
+        role: action.payload.role || "guest", // default role fallback
+        ...action.payload, // keep any extra fields from backend
+      };
       state.isAuthenticated = true;
     },
     logout: (state) => {

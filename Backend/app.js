@@ -25,10 +25,7 @@ setupApp(app, sessionStore);
 app.use("/api/auth", authRoutes);
 app.use("/api/store", storeRoutes);
 app.use("/api/host", authenticate([ROLES.HOST]), hostRoutes);
-// Example: Admin-only routes in the future
-// app.use("/api/admin", authenticate([ROLES.ADMIN]), adminRoutes);
 
-// 404 handler
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
@@ -36,7 +33,6 @@ app.use((req, res) => {
 // Global error handler
 app.use(errorHandler);
 
-// Start server
 const PORT = process.env.PORT || 4000;
 connectDB().then(() => {
   app.listen(PORT, () =>

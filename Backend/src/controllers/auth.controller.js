@@ -31,14 +31,23 @@ export const postSignup = async (req, res) => {
       lastName,
       email: emailNormalized,
       password: hashedPassword,
-      userType, // guest or host
+      userType,
     });
 
     await newUser.save();
 
+    // create session immediately (auto-login)
+    req.session.isLoggedIn = true;
+    req.session.user = {
+      id: newUser._id,
+      name: newUser.firstName,
+      role: newUser.userType,
+    };
+
     return res.status(201).json({
       success: true,
       message: "Signup successful",
+      user: req.session.user,
     });
   } catch (err) {
     console.error("Signup error:", err);

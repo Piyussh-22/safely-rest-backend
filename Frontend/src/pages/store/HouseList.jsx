@@ -31,9 +31,7 @@ const dummyHouses = [
 const HouseList = () => {
   return (
     <main className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-center mb-8 text-blue-700">
-        Available Houses
-      </h1>
+      <h1 className="text-3xl font-bold text-center mb-8 ">Available Houses</h1>
 
       {dummyHouses.length === 0 ? (
         <p className="text-center text-gray-400">No houses registered yet.</p>
@@ -74,7 +72,7 @@ const HouseList = () => {
                 <button className="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded transition">
                   View
                 </button>
-                <div className="flex-shrink-0">
+                <div className="flex flex-1 justify-center items-center ">
                   <FavButton isFavourite={false} />
                 </div>
                 <button className="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded transition">
