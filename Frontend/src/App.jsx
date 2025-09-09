@@ -8,9 +8,9 @@ import FavouriteList from "./pages/store/FavouriteList";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 import ErrorPage from "./pages/ErrorPage";
-import HostHouseList from "./pages/host/HostHouseList";
-import AddOrEditHouse from "./pages/host/AddOrEditHouse";
-
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AddHouse from "./pages/host/AddHouse";
+import HostHouses from "./pages/host/HostHouses";
 const Layout = () => {
   return (
     <div
@@ -44,6 +44,7 @@ const App = () => {
   return (
     <Routes>
       <Route element={<Layout />}>
+        <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/" element={<Index />} />
         <Route path="/houses" element={<HouseList />} />
         <Route path="/houses/:id" element={<HouseDetails />} />
@@ -53,9 +54,8 @@ const App = () => {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/host/houses" element={<HostHouseList />} />
-        <Route path="/host/add-house" element={<AddOrEditHouse />} />
-        <Route path="/host/edit-house/:id" element={<AddOrEditHouse />} />
+        <Route path="/host/houses" element={<HostHouses />} />
+        <Route path="/host/addHouse" element={<AddHouse />} />
         <Route path="*" element={<ErrorPage />} />
       </Route>
     </Routes>

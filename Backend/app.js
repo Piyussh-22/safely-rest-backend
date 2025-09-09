@@ -1,31 +1,41 @@
 // External
 import express from "express";
+import cors from "cors";
 import "dotenv/config";
 
 // Local
 import authRoutes from "./src/routes/auth.routes.js";
 import storeRoutes from "./src/routes/store.routes.js";
 import hostRoutes from "./src/routes/host.routes.js";
+import adminRoutes from "./src/routes/admin.routes.js";
 import { connectDB } from "./src/utils/db.util.js";
-import { authenticate } from "./src/middlewares/authenticate.js";
 import { errorHandler } from "./src/middlewares/errorHandler.js";
-import { setupApp } from "./src/config/setupApp.config.js";
-import { createSessionStore } from "./src/config/session.config.js";
-import { ROLES } from "./src/constants/roles.js";
+import { protect, restrictTo } from "./src/middlewares/auth.js";
 
 const app = express();
 
-// Setup MongoDB session store
-const sessionStore = createSessionStore();
+// Core middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
-// Apply all middlewares from config
-setupApp(app, sessionStore);
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    credentials: true,
+  })
+);
 
-// API Routes
+console.log("🟢 App middlewares configured (JWT only)");
+
+// Public routes (no auth required)
 app.use("/api/auth", authRoutes);
 app.use("/api/store", storeRoutes);
-app.use("/api/host", authenticate([ROLES.HOST]), hostRoutes);
 
+// Protected routes
+app.use("/api/host", protect, restrictTo("host"), hostRoutes);
+app.use("/api/admin", protect, restrictTo("admin"), adminRoutes);
+
+// 404 handler
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
@@ -34,8 +44,7 @@ app.use((req, res) => {
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 4000;
+
 connectDB().then(() => {
-  app.listen(PORT, () =>
-    console.log(`✅ Server running at http://localhost:${PORT}`)
-  );
+  app.listen(PORT, () => console.log(`🟢 Live at PORT:${PORT}`));
 });

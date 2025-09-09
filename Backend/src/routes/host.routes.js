@@ -1,23 +1,34 @@
 import express from "express";
-const hostRouter = express.Router();
-
 import {
   getHostHouses,
   postAddHouse,
   updateHouse,
   deleteHouse,
 } from "../controllers/host.controller.js";
+import { protect, restrictTo } from "../middlewares/auth.js"; // updated
 
-// Add a new house
-hostRouter.post("/add-house", postAddHouse);
+const hostRouter = express.Router();
 
-// Update an existing house
-hostRouter.put("/edit-house/:houseId", updateHouse);
+// Add a new house (Host only)
+hostRouter.post("/add-house", protect, restrictTo("host"), postAddHouse);
 
-// Delete a house
-hostRouter.delete("/delete-house/:houseId", deleteHouse);
+// Update an existing house (Host only)
+hostRouter.put(
+  "/edit-house/:houseId",
+  protect,
+  restrictTo("host"),
+  updateHouse
+);
 
-// Show all houses hosted by the user
-hostRouter.get("/host-house-list", getHostHouses);
+// Delete a house (Host only)
+hostRouter.delete(
+  "/delete-house/:houseId",
+  protect,
+  restrictTo("host"),
+  deleteHouse
+);
+
+// Show all houses hosted by this user (Host only)
+hostRouter.get("/hostHouses", protect, restrictTo("host"), getHostHouses);
 
 export default hostRouter;

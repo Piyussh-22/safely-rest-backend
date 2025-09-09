@@ -19,8 +19,12 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className="px-6 py-2 flex justify-between items-center bg-gray-200 dark:bg-gray-900 text-black dark:text-white
-       shadow border-b"
+        className="px-6 py-2 flex justify-between items-center
+       shadow border-b "
+        style={{
+          backgroundColor: "var(--bg)",
+          color: "var(--text)",
+        }}
       >
         <Link to="/" className="text-2xl font-bold text-red-400">
           Safely Rest
@@ -37,8 +41,8 @@ const Navbar = () => {
           )}
           {!isAuthenticated ? (
             <>
-              <Link to="/signup" className="hover:text-red-400">
-                Sign Up
+              <Link to="/login" className="hover:text-red-400">
+                Log In
               </Link>
             </>
           ) : (

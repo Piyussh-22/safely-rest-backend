@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../../redux/authSlice";
-import api from "../../axios.js";
+import api from "../../services/api.js";
+import GoogleBtn from "../../components/GoogleBtn.jsx";
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -10,7 +11,6 @@ export default function Signup() {
 
   const [formData, setFormData] = useState({
     firstName: "",
-    lastName: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -19,6 +19,7 @@ export default function Signup() {
   });
 
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -31,6 +32,8 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    setErrorMessage("");
+
     if (formData.password !== formData.confirmPassword) {
       return setErrorMessage("Passwords do not match");
     }
@@ -39,10 +42,10 @@ export default function Signup() {
       return setErrorMessage("You must accept the terms");
     }
 
+    setLoading(true);
     try {
       const res = await api.post("/auth/signup", {
         firstName: formData.firstName,
-        lastName: formData.lastName,
         email: formData.email,
         password: formData.password,
         confirmPassword: formData.confirmPassword,
@@ -50,35 +53,54 @@ export default function Signup() {
       });
 
       if (res.data.success) {
+        const { token, user } = res.data;
+
+        // Store token in localStorage
+        localStorage.setItem("token", token);
+
+        // Set default Authorization header for future requests
+        api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+        // Dispatch login success
         dispatch(
           loginSuccess({
-            id: res.data.user?.id || "",
-            name: `${formData.firstName} ${formData.lastName}`,
+            id: user.id,
+            name: `${user.name || formData.firstName}`,
             email: formData.email,
-            type: formData.userType,
+            role: user.role,
           })
         );
+
         navigate("/");
       } else {
         setErrorMessage(res.data.message || "Signup failed");
       }
     } catch (err) {
       setErrorMessage(err.response?.data?.message || "Signup failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center px-4 py-4"
+      className="flex flex-col min-h-screen items-center justify-center px-4 py-4"
       style={{
         backgroundColor: "var(--bg)",
         text: "var(--bg)",
       }}
     >
-      <div className="w-full max-w-md  rounded-2xl shadow-xl p-8 space-y-6 dark:border border">
+      <div className="w-96">
+        <GoogleBtn userType="guest" />
+        <div className="flex items-center justify-center my-4">
+          <span className="px-2 text-sm text-gray-500">OR</span>
+        </div>
+      </div>
+
+      <div className="w-full max-w-md rounded-2xl shadow-xl p-8 space-y-6 dark:border border">
         <div className="text-center">
           <h2 className="text-3xl font-bold">Create Account</h2>
-          <p className=" text-sm">Sign up to get started</p>
+          <p className="text-sm">Sign up to get started</p>
         </div>
 
         {errorMessage && (
@@ -90,7 +112,7 @@ export default function Signup() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex gap-2">
             <div className="flex-1">
-              <label className="block text-sm font-semibold ">First Name</label>
+              <label className="block text-sm font-semibold">First Name</label>
               <input
                 type="text"
                 name="firstName"
@@ -101,32 +123,33 @@ export default function Signup() {
               />
             </div>
             <div className="flex-1">
-              <label className="block text-sm font-semibold ">Last Name</label>
-              <input
-                type="text"
-                name="lastName"
-                value={formData.lastName}
+              <label className="block text-sm font-semibold">User Type</label>
+              <select
+                name="userType"
+                value={formData.userType}
                 onChange={handleChange}
-                required
-                className="mt-1 w-full border rounded-lg px-4 py-2"
-              />
+                className="mt-1 w-full border rounded-lg px-1 py-2"
+              >
+                <option value="guest">Guest</option>
+                <option value="host">Host</option>
+              </select>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-semibold ">Email</label>
+            <label className="block text-sm font-semibold">Email</label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               required
-              className="mt-1 w-full border  rounded-lg px-4 py-2"
+              className="mt-1 w-full border rounded-lg px-4 py-2"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold ">Password</label>
+            <label className="block text-sm font-semibold">Password</label>
             <input
               type="password"
               name="password"
@@ -138,7 +161,7 @@ export default function Signup() {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold ">
+            <label className="block text-sm font-semibold">
               Confirm Password
             </label>
             <input
@@ -147,21 +170,8 @@ export default function Signup() {
               value={formData.confirmPassword}
               onChange={handleChange}
               required
-              className="mt-1 w-full border  rounded-lg px-4 py-2"
+              className="mt-1 w-full border rounded-lg px-4 py-2"
             />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold ">User Type</label>
-            <select
-              name="userType"
-              value={formData.userType}
-              onChange={handleChange}
-              className="mt-1 w-full border rounded-lg px-1 py-2"
-            >
-              <option value="guest">Guest</option>
-              <option value="host">Host</option>
-            </select>
           </div>
 
           <div className="flex items-center space-x-2 p-2 border border-gray-300 rounded-lg">
@@ -171,7 +181,7 @@ export default function Signup() {
               checked={formData.termsAccepted}
               onChange={handleChange}
             />
-            <label className="text-sm ">
+            <label className="text-sm">
               I agree to the terms and conditions
             </label>
           </div>
@@ -179,13 +189,13 @@ export default function Signup() {
           <button
             type="submit"
             className="w-full bg-red-500 hover:bg-red-600 py-2 rounded-lg font-semibold transition disabled:bg-gray-500 disabled:cursor-not-allowed"
-            disabled={!formData.termsAccepted}
+            disabled={!formData.termsAccepted || loading}
           >
-            Sign Up
+            {loading ? "Signing up..." : "Sign Up"}
           </button>
         </form>
 
-        <p className="text-center text-sm ">
+        <p className="text-center text-sm">
           Already have an account?{" "}
           <a href="/login" className="text-red-400 hover:underline">
             Log In

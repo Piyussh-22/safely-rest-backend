@@ -1,7 +1,7 @@
 import { Favourite } from "../models/favourite.js";
 import { House } from "../models/house.js";
 
-// ✅ GET: All Houses
+//  GET: All Houses
 export const getHouses = async (req, res) => {
   try {
     const houses = await House.find();
@@ -18,7 +18,7 @@ export const getHouses = async (req, res) => {
   }
 };
 
-// ✅ GET: House Details
+//  GET: House Details
 export const getHouseDetails = async (req, res) => {
   const { houseId } = req.params;
   try {
@@ -42,10 +42,12 @@ export const getHouseDetails = async (req, res) => {
   }
 };
 
-// ✅ GET: Favourite Houses
+//  GET: Favourite Houses
 export const getFavouriteList = async (req, res) => {
   try {
-    const favourites = await Favourite.find().populate("houseId");
+    const favourites = await Favourite.find({ userId: req.user._id }).populate(
+      "houseId"
+    );
     const favouriteHouses = favourites.map((fav) => ({
       ...fav.houseId.toObject(),
       isFav: true,
@@ -64,7 +66,7 @@ export const getFavouriteList = async (req, res) => {
   }
 };
 
-// ✅ POST: Add or Remove Favourite (Toggle)
+// POST: Add or Remove Favourite (Toggle)
 export const toggleFavourite = async (req, res) => {
   const { houseId } = req.body;
 
@@ -76,15 +78,15 @@ export const toggleFavourite = async (req, res) => {
   }
 
   try {
-    const existing = await Favourite.findOne({ houseId });
+    const existing = await Favourite.findOne({ houseId, userId: req.user._id });
     if (existing) {
-      await Favourite.findOneAndDelete({ houseId });
+      await Favourite.findOneAndDelete({ houseId, userId: req.user._id });
       return res.json({
         success: true,
         message: "Removed from favourites",
       });
     } else {
-      await Favourite.create({ houseId });
+      await Favourite.create({ houseId, userId: req.user._id });
       return res.json({
         success: true,
         message: "Added to favourites",
@@ -104,7 +106,7 @@ export const deleteFavourite = async (req, res) => {
   const { houseId } = req.params;
 
   try {
-    await Favourite.findOneAndDelete({ houseId });
+    await Favourite.findOneAndDelete({ houseId, userId: req.user._id });
     return res.json({
       success: true,
       message: "Favourite removed successfully",

@@ -6,22 +6,38 @@ import {
   toggleFavourite,
   deleteFavourite,
 } from "../controllers/store.controller.js";
+import { protect, restrictTo } from "../middlewares/auth.js";
 
 const storeRoutes = express.Router();
 
-// GET: All houses
+// Public: All houses
 storeRoutes.get("/houses", getHouses);
 
-// GET: House details by ID
+// Public: House details by ID
 storeRoutes.get("/houses/:houseId", getHouseDetails);
 
-// GET: User's favourites
-storeRoutes.get("/favourites", getFavouriteList);
+// Authenticated: User's favourites
+storeRoutes.get(
+  "/favourites",
+  protect,
+  restrictTo("guest", "host"),
+  getFavouriteList
+);
 
-// POST: Add or remove from favourites (toggle)
-storeRoutes.post("/favourites", toggleFavourite);
+// Authenticated: Add or remove from favourites
+storeRoutes.post(
+  "/favourites",
+  protect,
+  restrictTo("guest", "host"),
+  toggleFavourite
+);
 
-// DELETE: Remove from favourites
-storeRoutes.delete("/favourites/:houseId", deleteFavourite);
+// Authenticated: Remove from favourites
+storeRoutes.delete(
+  "/favourites/:houseId",
+  protect,
+  restrictTo("guest", "host"),
+  deleteFavourite
+);
 
 export default storeRoutes;

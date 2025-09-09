@@ -5,6 +5,7 @@ import {
   postSignup,
   postLogout,
 } from "../controllers/auth.controller.js";
+import { postGoogleLogin } from "../controllers/auth.controller.js";
 
 const authRoutes = express.Router();
 
@@ -16,7 +17,6 @@ authRoutes.post(
   "/signup",
   [
     body("firstName").notEmpty().withMessage("First name is required"),
-    body("lastName").notEmpty().withMessage("Last name is required"),
     body("email").isEmail().withMessage("Enter a valid email"),
     body("password")
       .isLength({ min: 6 })
@@ -36,5 +36,8 @@ authRoutes.post(
 
 // POST: Logout
 authRoutes.post("/logout", postLogout);
+
+// Google Login
+authRoutes.post("/google-login", postGoogleLogin);
 
 export default authRoutes;

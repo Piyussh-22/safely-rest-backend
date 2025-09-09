@@ -2,12 +2,12 @@
 @custom-variant dark (&:where(.dark, .dark *));
 :root {
   --bg: theme(colors.gray.200);
-  --text: theme(colors.gray.900);
+  --text: theme(colors.gray.950);
 }
 
 .dark {
-  --bg: theme(colors.gray.900);
-  --text: theme(colors.gray.200);
+  --bg: theme(colors.gray.950);
+  --text: theme(colors.gray.100);
 }
 
 @keyframes blink {

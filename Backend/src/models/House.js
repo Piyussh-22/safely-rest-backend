@@ -19,15 +19,26 @@ const houseSchema = new mongoose.Schema(
       max: [5, "Rating must be at most 5"],
       default: 0,
     },
-    photoUrl: {
-      type: String,
-      required: true,
-      validate: {
-        validator: (val) => /^https?:\/\/.+/.test(val),
-        message: "Photo URL must be valid",
-      },
+    photos: {
+      type: [String],
+      validate: [
+        {
+          validator: (arr) => arr.length >= 1,
+          message: "At least 1 photo is required",
+        },
+        {
+          validator: (arr) => arr.length <= 2,
+          message: "Maximum 2 photos allowed",
+        },
+      ],
     },
     description: { type: String, required: true, trim: true },
+
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
   { timestamps: true }
 );
