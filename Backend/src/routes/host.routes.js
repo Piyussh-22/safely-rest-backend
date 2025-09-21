@@ -1,34 +1,28 @@
+// src/routes/host.routes.js
 import express from "express";
 import {
+  addHouse,
   getHostHouses,
-  postAddHouse,
-  updateHouse,
   deleteHouse,
 } from "../controllers/host.controller.js";
-import { protect, restrictTo } from "../middlewares/auth.js"; // updated
+import { upload } from "../middlewares/uploadCloudinary.js";
 
-const hostRouter = express.Router();
+const router = express.Router();
 
-// Add a new house (Host only)
-hostRouter.post("/add-house", protect, restrictTo("host"), postAddHouse);
+// routes are protechted at app.js
 
-// Update an existing house (Host only)
-hostRouter.put(
-  "/edit-house/:houseId",
-  protect,
-  restrictTo("host"),
-  updateHouse
-);
+/**
+ * Add a new house
+ * - Allows max 2 photos
+ */
+router.post("/houses", upload.array("photos", 2), addHouse);
 
-// Delete a house (Host only)
-hostRouter.delete(
-  "/delete-house/:houseId",
-  protect,
-  restrictTo("host"),
-  deleteHouse
-);
+/* Get all houses owned by the logged-in host
+ */
+router.get("/houses", getHostHouses);
 
-// Show all houses hosted by this user (Host only)
-hostRouter.get("/hostHouses", protect, restrictTo("host"), getHostHouses);
+/* Delete a house by ID
+ */
+router.delete("/houses/:houseId", deleteHouse);
 
-export default hostRouter;
+export default router;
