@@ -12,7 +12,7 @@ export const getAdminStats = async (req, res) => {
     const recentUsers = await User.find({})
       .sort({ createdAt: -1 })
       .limit(5)
-      .select("name userType createdAt");
+      .select("firstName userType createdAt");
 
     return res.json({
       success: true,

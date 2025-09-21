@@ -1,10 +1,11 @@
-// routes/admin.routes.js
+// Routes are protected at app.js
+// src/routes/admin.routes.js
 import express from "express";
-import { protect, restrictTo } from "../middlewares/auth.js";
 import { getAdminStats } from "../controllers/admin.controller.js";
 
-const adminRouter = express.Router();
+const router = express.Router();
 
-adminRouter.get("/stats", protect, restrictTo("admin"), getAdminStats);
+// Admin dashboard stats
+router.get("/stats", getAdminStats);
 
-export default adminRouter;
+export default router;

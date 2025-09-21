@@ -20,6 +20,16 @@ export const protect = async (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+    // Hardcoded admin bypass
+    if (decoded.id === "admin-id") {
+      req.user = {
+        _id: "admin-id",
+        email: process.env.ADMIN_EMAIL,
+        userType: "admin",
+      };
+      return next();
+    }
+
     const user = await User.findById(decoded.id);
     if (!user) {
       return res.status(401).json({
