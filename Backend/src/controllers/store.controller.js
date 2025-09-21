@@ -1,48 +1,36 @@
 import { Favourite } from "../models/favourite.js";
 import { House } from "../models/house.js";
 
-//  GET: All Houses
+// GET: All houses
 export const getHouses = async (req, res) => {
   try {
     const houses = await House.find();
-    return res.json({
-      success: true,
-      data: houses,
-    });
+    res.json({ success: true, data: houses });
   } catch (err) {
     console.error("Error fetching houses:", err.message);
-    return res.status(500).json({
-      success: false,
-      message: "Failed to fetch houses",
-    });
+    res.status(500).json({ success: false, message: "Failed to fetch houses" });
   }
 };
 
-//  GET: House Details
+// GET: House details by ID
 export const getHouseDetails = async (req, res) => {
   const { houseId } = req.params;
   try {
     const house = await House.findById(houseId);
-    if (!house) {
-      return res.status(404).json({
-        success: false,
-        message: "House not found",
-      });
-    }
-    return res.json({
-      success: true,
-      data: house,
-    });
+    if (!house)
+      return res
+        .status(404)
+        .json({ success: false, message: "House not found" });
+    res.json({ success: true, data: house });
   } catch (err) {
     console.error("Error fetching house details:", err.message);
-    return res.status(500).json({
-      success: false,
-      message: "Failed to fetch house details",
-    });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch house details" });
   }
 };
 
-//  GET: Favourite Houses
+// GET: Favourite houses for logged-in user
 export const getFavouriteList = async (req, res) => {
   try {
     const favourites = await Favourite.find({ userId: req.user._id }).populate(
@@ -52,70 +40,36 @@ export const getFavouriteList = async (req, res) => {
       ...fav.houseId.toObject(),
       isFav: true,
     }));
-
-    return res.json({
-      success: true,
-      data: favouriteHouses,
-    });
+    res.json({ success: true, data: favouriteHouses });
   } catch (err) {
     console.error("Error fetching favourites:", err.message);
-    return res.status(500).json({
-      success: false,
-      message: "Failed to fetch favourites",
-    });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch favourites" });
   }
 };
 
-// POST: Add or Remove Favourite (Toggle)
+// POST: Toggle favourite (add/remove)
 export const toggleFavourite = async (req, res) => {
   const { houseId } = req.body;
-
-  if (!houseId) {
-    return res.status(400).json({
-      success: false,
-      message: "House ID is required",
-    });
-  }
+  if (!houseId)
+    return res
+      .status(400)
+      .json({ success: false, message: "House ID is required" });
 
   try {
     const existing = await Favourite.findOne({ houseId, userId: req.user._id });
     if (existing) {
       await Favourite.findOneAndDelete({ houseId, userId: req.user._id });
-      return res.json({
-        success: true,
-        message: "Removed from favourites",
-      });
+      res.json({ success: true, message: "Removed from favourites" });
     } else {
       await Favourite.create({ houseId, userId: req.user._id });
-      return res.json({
-        success: true,
-        message: "Added to favourites",
-      });
+      res.json({ success: true, message: "Added to favourites" });
     }
   } catch (err) {
     console.error("Error toggling favourite:", err.message);
-    return res.status(500).json({
-      success: false,
-      message: "Failed to toggle favourite",
-    });
-  }
-};
-
-// ✅ DELETE: Remove Favourite
-export const deleteFavourite = async (req, res) => {
-  const { houseId } = req.params;
-
-  try {
-    await Favourite.findOneAndDelete({ houseId, userId: req.user._id });
-    return res.json({
-      success: true,
-      message: "Favourite removed successfully",
-    });
-  } catch (err) {
-    console.error("Error removing favourite:", err.message);
-    return res.status(500).json({
-      success: false,
-      message: "Failed to remove favourite",
-    });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to toggle favourite" });
   }
 };

@@ -6,7 +6,7 @@ import { signToken } from "../utils/token.js";
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-// POST: Signup
+// POST: Signup a new user
 export const postSignup = async (req, res) => {
   const { firstName, email, password, userType } = req.body;
 
@@ -50,7 +50,7 @@ export const postSignup = async (req, res) => {
       },
     });
   } catch (err) {
-    console.error("Signup error:", err);
+    console.error("POST /auth/signup error:", err.message);
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -58,12 +58,39 @@ export const postSignup = async (req, res) => {
   }
 };
 
-// POST: Login
+// POST: Login user (normal + hardcoded admin)
 export const postLogin = async (req, res) => {
   const { email, password } = req.body;
 
   try {
     const emailNormalized = email.toLowerCase();
+
+    // Hardcoded single admin login
+    if (
+      emailNormalized === process.env.ADMIN_EMAIL &&
+      password === process.env.ADMIN_PASSWORD
+    ) {
+      const adminUser = {
+        _id: "admin-id",
+        firstName: "Admin",
+        email: emailNormalized,
+        userType: "admin",
+      };
+
+      const token = signToken(adminUser, { expiresIn: "7d" });
+      return res.json({
+        success: true,
+        message: "Admin login successful",
+        token,
+        user: {
+          id: adminUser._id,
+          name: adminUser.firstName,
+          role: adminUser.userType,
+        },
+      });
+    }
+
+    // Normal user login
     const user = await User.findOne({ email: emailNormalized }).select(
       "+password"
     );
@@ -80,7 +107,7 @@ export const postLogin = async (req, res) => {
         .json({ success: false, message: "Invalid email or password" });
     }
 
-    const token = signToken(user);
+    const token = signToken(user, { expiresIn: "7d" });
 
     return res.json({
       success: true,
@@ -93,19 +120,19 @@ export const postLogin = async (req, res) => {
       },
     });
   } catch (err) {
-    console.error("Login error:", err);
+    console.error("POST /auth/login error:", err.message);
     return res
       .status(500)
       .json({ success: false, message: "Internal Server Error" });
   }
 };
 
-// POST: Logout , JWT token deleting on client side
+// POST: Logout (JWT handled on client side)
 export const postLogout = (req, res) => {
   return res.json({ success: true, message: "Logged out successfully" });
 };
 
-//post : google login
+// POST: Google login
 export const postGoogleLogin = async (req, res) => {
   try {
     const { idToken, userType } = req.body;
@@ -123,7 +150,7 @@ export const postGoogleLogin = async (req, res) => {
       return res.status(400).json({ message: "Google email not verified" });
 
     const googleId = payload.sub;
-    const email = payload.email;
+    const email = payload.email.toLowerCase(); // normalize email
     const firstName =
       payload.given_name || (payload.name || "").split(" ")[0] || "";
 
@@ -143,7 +170,8 @@ export const postGoogleLogin = async (req, res) => {
         });
       }
     }
-    const token = signToken(user);
+
+    const token = signToken(user, { expiresIn: "7d" });
     return res.status(200).json({
       success: true,
       message: "Google login successful",
@@ -155,22 +183,9 @@ export const postGoogleLogin = async (req, res) => {
       },
     });
   } catch (err) {
-    console.error("Google login error : ", err);
+    console.error("POST /auth/google-login error:", err.message);
     return res
       .status(500)
       .json({ success: false, message: "Google login failed" });
   }
-
-  // GOOGLE LOGIN PLACEHOLDER (Step 3)
-  // import { OAuth2Client } from "google-auth-library";
-  // const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-
-  // export const googleLogin = async (req, res) => {
-  //   try {
-  //     // We'll implement this in Step 3
-  //     return res.status(501).json({ message: "Google login not implemented yet" });
-  //   } catch (err) {
-  //     return res.status(500).json({ message: "Something went wrong" });
-  //   }
-  // };
 };
