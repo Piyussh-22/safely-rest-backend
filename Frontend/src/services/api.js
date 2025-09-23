@@ -1,10 +1,12 @@
 import axios from "axios";
 
+// Create a single axios instance
 const api = axios.create({
-  baseURL: "http://localhost:4000/api",
+  baseURL: "/api",
   withCredentials: true,
 });
 
+// Helper to set/remove token
 export const setAuthToken = (token) => {
   if (token) {
     api.defaults.headers.common["Authorization"] = `Bearer ${token}`;

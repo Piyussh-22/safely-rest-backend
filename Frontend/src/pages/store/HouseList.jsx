@@ -9,25 +9,6 @@
 
 import FavButton from "../../components/FavButton";
 
-const dummyHouses = [
-  {
-    _id: "1",
-    name: "Sunny Stay",
-    location: "Ranchi",
-    price: 2500,
-    rating: 4.5,
-    photoUrl: "https://via.placeholder.com/300x200",
-  },
-  {
-    _id: "2",
-    name: "Cozy Nest",
-    location: "Delhi",
-    price: 3200,
-    rating: 4.2,
-    photoUrl: "https://via.placeholder.com/300x200",
-  },
-];
-
 const HouseList = () => {
   return (
     <main className="container mx-auto px-4 py-8">
