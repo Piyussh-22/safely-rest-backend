@@ -34,10 +34,19 @@ export const getHostHouses = async (token) => {
   }
 };
 
-export const addHouse = async (formData, token) => {
+export const addHouse = async (formData, token, onUploadProgress) => {
   try {
     setAuthToken(token);
-    const res = await api.post("/host/houses", formData); // FormData handled automatically
+    const res = await api.post("/host/houses", formData, {
+      onUploadProgress: (progressEvent) => {
+        if (onUploadProgress) {
+          const percent = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+          onUploadProgress(percent);
+        }
+      },
+    });
     return res.data;
   } catch (err) {
     throw new Error(err.response?.data?.message || "Failed to add house");

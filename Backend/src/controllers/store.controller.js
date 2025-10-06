@@ -52,20 +52,45 @@ export const getFavouriteList = async (req, res) => {
 // POST: Toggle favourite (add/remove)
 export const toggleFavourite = async (req, res) => {
   const { houseId } = req.body;
-  if (!houseId)
+  if (!houseId) {
     return res
       .status(400)
       .json({ success: false, message: "House ID is required" });
+  }
 
   try {
+    let message = "";
     const existing = await Favourite.findOne({ houseId, userId: req.user._id });
+
     if (existing) {
       await Favourite.findOneAndDelete({ houseId, userId: req.user._id });
-      res.json({ success: true, message: "Removed from favourites" });
+      //console.log("house remove");
+      message = `Removed from favourites house:${houseId}`;
     } else {
-      await Favourite.create({ houseId, userId: req.user._id });
-      res.json({ success: true, message: "Added to favourites" });
+      try {
+        await Favourite.create({ houseId, userId: req.user._id });
+        //console.log("house added");
+        message = `Added to favourites house:${houseId}`;
+      } catch (err) {
+        // If unique index violation → house already favourited
+        if (err.code === 11000) {
+          message = "House already in favourites";
+        } else {
+          throw err;
+        }
+      }
     }
+
+    // Always return the updated favourites list
+    const favourites = await Favourite.find({ userId: req.user._id }).populate(
+      "houseId"
+    );
+    const favouriteHouses = favourites.map((fav) => ({
+      ...fav.houseId.toObject(),
+      isFav: true,
+    }));
+
+    res.json({ success: true, message, data: favouriteHouses });
   } catch (err) {
     console.error("Error toggling favourite:", err.message);
     res

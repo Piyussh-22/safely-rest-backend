@@ -7,8 +7,8 @@ export const fetchFavorites = createAsyncThunk(
   async (_, { rejectWithValue, getState }) => {
     try {
       const token = getState().auth.token;
-      const data = await favoritesService.getFavorites(token);
-      return data;
+      const res = await favoritesService.getFavorites(token);
+      return res.data; // Extract data array here
     } catch (err) {
       return rejectWithValue(err.message);
     }
@@ -20,8 +20,8 @@ export const toggleFavorite = createAsyncThunk(
   async (houseId, { rejectWithValue, getState }) => {
     try {
       const token = getState().auth.token;
-      const data = await favoritesService.toggleFavorite(houseId, token);
-      return data;
+      const res = await favoritesService.toggleFavorite(houseId, token);
+      return res.data; // Extract data array here
     } catch (err) {
       return rejectWithValue(err.message);
     }

@@ -1,110 +1,132 @@
-import { Users, UserCheck, Home } from "lucide-react";
+import { useEffect, useState } from "react";
+import api from "../../services/api.js";
 
 const AdminDashboard = () => {
-  // Example dummy data (replace with API calls later)
-  const stats = {
-    totalMembers: 120,
-    totalGuests: 80,
-    totalHosts: 40,
-    totalHouses: 25,
-  };
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const cards = [
-    {
-      title: "Total Members",
-      value: stats.totalMembers,
-      icon: <Users className="w-8 h-8" />,
-    },
-    {
-      title: "Total Guests",
-      value: stats.totalGuests,
-      icon: <UserCheck className="w-8 h-8" />,
-    },
-    {
-      title: "Total Hosts",
-      value: stats.totalHosts,
-      icon: <UserCheck className="w-8 h-8" />,
-    },
-    {
-      title: "Houses Listed",
-      value: stats.totalHouses,
-      icon: <Home className="w-8 h-8" />,
-    },
-  ];
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      console.log("Dashboard fetch start");
+      try {
+        const res = await api.get("/admin/stats");
+        if (res.data.success) {
+          setDashboardData(res.data.data);
+        } else {
+          setError("Failed to load dashboard data");
+        }
+      } catch (err) {
+        console.error("Dashboard fetch error:", err);
+        setError("Error fetching dashboard");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Dummy recent users (replace with API data)
-  const recentUsers = [
-    { name: "Amit Verma", role: "Guest", date: "2025-09-05" },
-    { name: "Sara Khan", role: "Host", date: "2025-09-04" },
-    { name: "John Doe", role: "Guest", date: "2025-09-03" },
-    { name: "Priya Sharma", role: "Host", date: "2025-09-02" },
-    { name: "Rahul Mehta", role: "Guest", date: "2025-09-01" },
-  ];
+    fetchDashboard();
+  }, []);
+
+  if (loading) return <p className="p-6 text-lg">Loading dashboard...</p>;
+  if (error)
+    return (
+      <p className="p-6 text-red-500 text-center text-lg font-semibold">
+        {error}
+      </p>
+    );
+  if (!dashboardData)
+    return <p className="p-6 text-center text-lg">No data found</p>;
+
+  const { totalMembers, totalHosts, totalGuests, totalHouses, recentUsers } =
+    dashboardData;
 
   return (
     <div
-      className="min-h-screen p-8"
-      style={{
-        backgroundColor: "var(--bg)",
-        color: "var(--text)",
-      }}
+      className="p-6 transition-colors duration-300"
+      style={{ backgroundColor: "var(--bg)", color: "var(--text)" }}
     >
-      {/* Header */}
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        <p className="text-gray-500 mt-1">Quick overview of SafelyRest</p>
-      </header>
+      <h1 className="text-3xl font-bold mb-8 text-center">Admin Dashboard</h1>
 
-      {/* Stats Cards */}
-      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-10">
-        {cards.map((card, index) => (
-          <div
-            key={index}
-            className="rounded-2xl p-6 shadow-lg flex items-center gap-4 transition hover:scale-[1.02]"
-            style={{ backgroundColor: "var(--card-bg)", color: "var(--text)" }}
-          >
-            <div className="p-3 rounded-xl bg-opacity-20 bg-gray-400">
-              {card.icon}
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">{card.title}</p>
-              <h2 className="text-2xl font-bold">{card.value}</h2>
-            </div>
-          </div>
-        ))}
+      {/* Stats Section */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        <div className="rounded-xl p-5 shadow-md border border-gray-200 bg-blue-300 dark:bg-blue-700 transition-colors duration-300">
+          <h2 className="font-semibold">Total Members</h2>
+          <p className="text-2xl font-bold mt-2">{totalMembers}</p>
+        </div>
+
+        <div className="rounded-xl p-5 shadow-md border border-gray-200 bg-green-300 dark:bg-green-700 transition-colors duration-300">
+          <h2 className="font-semibold">Total Hosts</h2>
+          <p className="text-2xl font-bold mt-2">{totalHosts}</p>
+        </div>
+
+        <div className="rounded-xl p-5 shadow-md border border-gray-200 bg-yellow-300 dark:bg-yellow-700 transition-colors duration-300">
+          <h2 className="font-semibold">Total Guests</h2>
+          <p className="text-2xl font-bold mt-2">{totalGuests}</p>
+        </div>
+
+        <div className="rounded-xl p-5 shadow-md border border-gray-200 bg-red-300 dark:bg-red-700 transition-colors duration-300">
+          <h2 className="font-semibold">Total Houses</h2>
+          <p className="text-2xl font-bold mt-2">{totalHouses}</p>
+        </div>
       </div>
 
-      {/* Recently Joined Users */}
-      <div
-        className="rounded-2xl p-6 shadow-lg"
-        style={{ backgroundColor: "var(--card-bg)", color: "var(--text)" }}
-      >
-        <h2 className="text-xl font-semibold mb-4">Recently Joined</h2>
+      {/* Recent Users */}
+      <div className="rounded-xl p-6 shadow-md border border-gray-200 transition-colors duration-300">
+        <h2 className="text-2xl font-semibold mb-4">Recent Users</h2>
 
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="text-left text-sm text-gray-500 border-b border-gray-300/30">
-                <th className="py-2 px-3">Name</th>
-                <th className="py-2 px-3">User Type</th>
-                <th className="py-2 px-3">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentUsers.map((user, index) => (
-                <tr
-                  key={index}
-                  className="border-b border-gray-300/20 text-sm hover:bg-gray-200/10 transition"
-                >
-                  <td className="py-2 px-3 font-medium">{user.name}</td>
-                  <td className="py-2 px-3">{user.role}</td>
-                  <td className="py-2 px-3">{user.date}</td>
+        {recentUsers.length === 0 ? (
+          <p className="text-gray-500 text-center">No recent users found.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm border-collapse">
+              <thead>
+                <tr className="bg-gray-200 dark:bg-gray-700">
+                  <th className="p-3 border-b border-gray-300 dark:border-gray-600 text-left font-semibold">
+                    Name
+                  </th>
+                  <th className="p-3 border-b border-gray-300 dark:border-gray-600 text-left font-semibold">
+                    Type
+                  </th>
+                  <th className="p-3 border-b border-gray-300 dark:border-gray-600 text-left font-semibold">
+                    Joined On
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {recentUsers.map((u, index) => (
+                  <tr
+                    key={u._id}
+                    className={`transition-colors ${
+                      index % 2 === 0
+                        ? "bg-gray-50 dark:bg-gray-800"
+                        : "bg-gray-100 dark:bg-gray-900"
+                    } hover:bg-gray-200 dark:hover:bg-gray-700`}
+                  >
+                    <td className="p-3 border-b border-gray-200 dark:border-gray-700">
+                      {u.firstName}
+                    </td>
+                    <td className="p-3 border-b border-gray-200 dark:border-gray-700">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          u.userType === "host"
+                            ? "bg-green-500 text-white"
+                            : "bg-blue-500 text-white"
+                        }`}
+                      >
+                        {u.userType.toUpperCase()}
+                      </span>
+                    </td>
+                    <td className="p-3 border-b border-gray-200 dark:border-gray-700">
+                      {new Date(u.createdAt).toLocaleString("en-IN", {
+                        dateStyle: "medium",
+                      })}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,69 +1,53 @@
-/*
-  🚧 Features to implement later:
-  - Fetch house list from backend (API call)
-  - Handle "View" button click → navigate to HouseDetail page
-  - Make FavButton functional (toggle favourite)
-  - Implement "Book" button functionality
-  - Add loading & error states
-*/
-
-import FavButton from "../../components/FavButton";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchHouses } from "../../redux/housesSlice";
+import StoreHouseCard from "./StoreHouseCard";
 
 const HouseList = () => {
+  const dispatch = useDispatch();
+  const { list, loading, error } = useSelector((state) => state.houses);
+
+  useEffect(() => {
+    dispatch(fetchHouses());
+  }, [dispatch]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[50vh]">
+        <p className="text-lg font-medium">Loading houses...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-[50vh]">
+        <p className="text-red-500">Failed to load houses: {error}</p>
+      </div>
+    );
+  }
+
+  if (!list || list.length === 0) {
+    return (
+      <div className="flex justify-center items-center min-h-[50vh]">
+        <p className="text-gray-500">No houses available right now.</p>
+      </div>
+    );
+  }
+
   return (
-    <main className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-center mb-8 ">Available Houses</h1>
-
-      {dummyHouses.length === 0 ? (
-        <p className="text-center text-gray-400">No houses registered yet.</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {dummyHouses.map((house) => (
-            <div
-              key={house._id}
-              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
-            >
-              {/* House Image */}
-              <img
-                src={house.photoUrl}
-                alt={house.name}
-                className="w-full h-48 object-cover"
-              />
-
-              {/* Price & Name */}
-              <div className="flex justify-between p-4">
-                <div>
-                  <span className="text-lg font-semibold text-gray-800">
-                    ₹{house.price}
-                  </span>
-                  <span className="block text-yellow-500">
-                    ⭐ {house.rating}/5
-                  </span>
-                </div>
-                <div className="text-right">
-                  <span className="font-bold text-gray-900">{house.name}</span>
-                  <span className="block text-gray-600">
-                    📍 {house.location}
-                  </span>
-                </div>
-              </div>
-
-              {/* Buttons */}
-              <div className="px-4 pb-4 flex items-center gap-2">
-                <button className="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded transition">
-                  View
-                </button>
-                <div className="flex flex-1 justify-center items-center ">
-                  <FavButton isFavourite={false} />
-                </div>
-                <button className="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded transition">
-                  Book
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+    <main
+      className="min-h-screen px-4 py-8 transition-colors duration-300"
+      style={{
+        backgroundColor: "var(--bg)",
+        color: "var(--text)",
+      }}
+    >
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {list.map((house) => (
+          <StoreHouseCard key={house._id} house={house} />
+        ))}
+      </div>
     </main>
   );
 };

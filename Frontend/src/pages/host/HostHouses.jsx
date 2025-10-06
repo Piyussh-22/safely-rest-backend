@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchHostHouses, deleteHouse } from "../../redux/housesSlice";
-import HouseCard from "../../components/HouseCard";
+import HostHouseCard from "./HostHouseCard";
 
 const HostHouses = () => {
   const dispatch = useDispatch();
@@ -40,7 +40,7 @@ const HostHouses = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {hostList.map((house) => (
-          <HouseCard
+          <HostHouseCard
             key={house._id}
             house={house}
             onDelete={handleDelete}

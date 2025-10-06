@@ -45,10 +45,14 @@ export const fetchHostHouses = createAsyncThunk(
 // Create house (host only)
 export const createHouse = createAsyncThunk(
   "houses/create",
-  async (houseData, { rejectWithValue, getState }) => {
+  async ({ formData, onUploadProgress }, { rejectWithValue, getState }) => {
     try {
       const token = getState().auth.token;
-      const data = await housesService.addHouse(houseData, token);
+      const data = await housesService.addHouse(
+        formData,
+        token,
+        onUploadProgress
+      );
       return data;
     } catch (err) {
       return rejectWithValue(err.message);

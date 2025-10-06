@@ -1,45 +1,24 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { loginSuccess } from "../redux/authSlice";
-import api from "../services/api";
+import { googleLoginUser } from "../redux/authSlice"; // ✅ correct import
 
 const GoogleBtn = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleGoogleLogin = async (response) => {
-    try {
-      const idToken = response.credential;
+  const handleGoogleLogin = (response) => {
+    const idToken = response.credential;
 
-      // include userType in payload
-      const res = await api.post("/auth/google-login", {
-        idToken,
-        userType: "guest",
-      });
-
-      if (res.data.success) {
-        const { token, user } = res.data;
-
-        // store token
-        localStorage.setItem("token", token);
-        api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
-        // update redux
-        dispatch(
-          loginSuccess({
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-          })
-        );
-
+    // Dispatch thunk directly — it will handle redux + localStorage
+    dispatch(googleLoginUser({ idToken, userType: "guest" }))
+      .unwrap()
+      .then(() => {
         navigate("/");
-      }
-    } catch (err) {
-      console.error("Google login failed", err);
-    }
+      })
+      .catch((err) => {
+        console.error("Google login failed", err);
+      });
   };
 
   useEffect(() => {

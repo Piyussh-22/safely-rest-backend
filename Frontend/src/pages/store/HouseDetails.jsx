@@ -1,67 +1,110 @@
-/*
-  🚧 Features to implement later:
-  - Fetch house details from API using ID (from URL params)
-  - Show loading & error states
-  - Add FavButton (toggle favourite)
-  - Implement "Book Now" button functionality
-  - Add responsive enhancements if needed
-*/
-
+import { useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchHouseById, clearSelected } from "../../redux/housesSlice";
 import FavButton from "../../components/FavButton";
-
-const dummyHouse = {
-  name: "Cozy Hilltop Cabin",
-  location: "Manali, Himachal Pradesh",
-  price: 3500,
-  rating: 4.6,
-  description: `Escape to this peaceful cabin surrounded by pine trees.\n\nPerfect for a weekend getaway with friends or family.`,
-  photoUrl:
-    "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1050&q=80",
-};
+import { Home, Heart, Database } from "lucide-react";
 
 const HouseDetails = () => {
-  const house = dummyHouse; // 🔁 Replace with fetched data later
+  const { id } = useParams();
+  const dispatch = useDispatch();
+  const {
+    selected: house,
+    loading,
+    error,
+  } = useSelector((state) => state.houses);
+  const { user } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    dispatch(fetchHouseById(id));
+    return () => dispatch(clearSelected());
+  }, [dispatch, id]);
+
+  if (loading) return <p className="p-6">Loading house details...</p>;
+  if (error) return <p className="p-6 text-red-500">Error: {error}</p>;
+  if (!house) return <p className="p-6">House not found.</p>;
+
+  const isHost = user?.userType === "host";
+  // ---------------- CHANGE HERE ----------------
+  // Only authenticated guests/users can favorite
+  const canFavorite =
+    user && (user.userType === "guest" || user.userType === "user");
+  // --------------------------------------------
 
   return (
-    <main className="max-w-3xl mx-auto px-4 py-10">
-      <section className="bg-white shadow-sm rounded-xl overflow-hidden">
-        {/* Image */}
-        <img
-          src={house.photoUrl}
-          alt={house.name}
-          className="w-full h-64 sm:h-[350px] object-cover"
-        />
+    <main
+      className="min-h-[70vh] p-4 md:p-6 mx-auto max-w-6xl"
+      style={{ backgroundColor: "var(--bg)", color: "var(--text)" }}
+    >
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-2 md:gap-0">
+        <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
+          {house.name}
+        </h1>
 
-        {/* Content */}
-        <div className="p-6 space-y-4">
-          <h1 className="text-3xl font-semibold text-gray-900">{house.name}</h1>
+        {/* Favorite button only for authenticated guests/users */}
+        {canFavorite && <FavButton houseId={house._id} />}
+      </div>
 
-          <p className="text-lg text-blue-700">{house.location}</p>
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Photos */}
+        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {house.photos.map((url, idx) => (
+            <img
+              key={idx}
+              src={url}
+              alt={`${house.name} - Photo ${idx + 1}`}
+              className="w-full h-56 sm:h-64 lg:h-72 xl:h-80 object-cover rounded-lg border hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+            />
+          ))}
+        </div>
 
-          <div className="grid grid-cols-2 gap-4 pt-2 text-sm text-gray-700">
-            <div>
-              <span className="text-gray-500">Price</span>
-              <br />₹{house.price} per night
-            </div>
-            <div>
-              <span className="text-gray-500">Rating</span>
-              <br />⭐ {house.rating}/5
-            </div>
+        {/* Details */}
+        <div className="flex-1 flex flex-col gap-4 max-w-lg lg:max-w-md">
+          <div className="p-4 rounded-lg shadow-md bg-[var(--bg)]">
+            <p className="text-lg font-semibold mb-2">
+              Price: ₹{house.price.toLocaleString()}
+            </p>
+            <p className="flex items-center gap-1 mb-2">
+              Location: {house.location}
+            </p>
+            <p>{house.description}</p>
           </div>
 
-          <div className="pt-4 border-t text-sm leading-relaxed text-gray-700 whitespace-pre-line">
-            {house.description}
-          </div>
+          {/* Role-based Links */}
+          <div className="flex flex-col sm:flex-row gap-3 mt-4">
+            <Link
+              to="/houses"
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-center transition flex justify-center gap-2"
+            >
+              <Home size={22} />
+              Houses
+            </Link>
 
-          {/* Buttons */}
-          <div className="flex items-center gap-4 pt-6 border-t">
-            <FavButton isFavourite={false} />
-            <button className="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded transition">
-              Book Now
-            </button>
+            {isHost && (
+              <Link
+                to="/host/houses"
+                className="flex-1 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-center transition flex justify-center gap-2"
+              >
+                <Database size={22} />
+                My Listings
+              </Link>
+            )}
+
+            {/* Favorites only for authenticated guests/users */}
+            {canFavorite && (
+              <Link
+                to="/favorites"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-center transition flex justify-center gap-2"
+              >
+                <Heart size={22} />
+                Favorites
+              </Link>
+            )}
           </div>
         </div>
-      </section>
+      </div>
     </main>
   );
 };

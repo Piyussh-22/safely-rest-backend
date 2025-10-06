@@ -1,23 +1,41 @@
-/*
-  🚧 Features to implement later:
-  - Check if the house is already in favourites (from Redux or API)
-  - On click: toggle favourite state (update Redux + DB)
-  - Show filled ❤️ if favourite, else outline 🤍
-  - Disable click if user is not logged in
-*/
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { Heart } from "lucide-react";
+import { toggleFavorite } from "../redux/favoritesSlice";
 
-import { useState } from "react";
+const FavButton = ({ houseId, className = "" }) => {
+  const dispatch = useDispatch();
+  const { items: favorites = [], loading } = useSelector(
+    (state) => state.favorites
+  );
 
-const FavButton = ({ isFavourite }) => {
-  const [fav, setFav] = useState(isFavourite || false); // Temporary local state
+  // Local state to toggle instantly
+  const [isFav, setIsFav] = useState(false);
+
+  // Sync local state with Redux on mount & whenever favorites change
+  useEffect(() => {
+    setIsFav(favorites.some((house) => String(house._id) === String(houseId)));
+  }, [favorites, houseId]);
+
+  const handleClick = (e) => {
+    e.stopPropagation();
+    if (!loading) {
+      setIsFav((prev) => !prev); // toggle instantly
+      dispatch(toggleFavorite(houseId));
+    }
+  };
 
   return (
     <button
-      onClick={() => setFav(!fav)} // Remove this when using actual logic
-      aria-label="Toggle favourite"
-      className="text-2xl transition-colors duration-200 hover:text-red-500"
+      onClick={handleClick}
+      disabled={loading}
+      className={`rounded-full shadow hover:scale-110 transition disabled:opacity-50 ${
+        isFav
+          ? "bg-red-500 text-white p-3" // favorited
+          : "bg-white dark:bg-gray-900 text-gray-500 p-3" // not favorited
+      } ${className}`}
     >
-      {fav ? "❤️" : "🤍"}
+      <Heart size={20} />
     </button>
   );
 };
