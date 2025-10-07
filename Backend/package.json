@@ -9,16 +9,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Piyussh-22/safely-rest-backend.git"
+    "url": "git+https://github.com/Piyussh-22/SafelyRest-Development.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Piyussh-22/safely-rest-backend/issues"
+    "url": "https://github.com/Piyussh-22/SafelyRest-Development/issues"
   },
-  "homepage": "https://github.com/Piyussh-22/safely-rest-backend#readme",
-  "description": "",
+  "homepage": "https://github.com/Piyussh-22/SafelyRest-Development#readme",
+  "description": "Development monorepo for SafelyRest (frontend + backend)",
   "devDependencies": {
     "nodemon": "^3.1.10"
   },
